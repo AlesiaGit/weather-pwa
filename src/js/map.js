@@ -80,7 +80,7 @@ this.draggedCityName = function(coordsToString) {
 		var name = data.response.GeoObjectCollection.featureMember["0"].GeoObject.name;
 		document.getElementsByClassName('location-search')[0].placeholder = name;
 		this.cityName = name;
-	});
+	}.bind(this));
 };
 
 

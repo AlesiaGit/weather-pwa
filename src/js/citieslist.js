@@ -147,16 +147,18 @@ var CitiesList = function () {
 
 
 	this.addNewCityToList = function(data) {
+		console.log(data.cityName);
 	var array = document.getElementsByClassName('location-city');
 
 	//проверяем, чтобы не было города в списке
 	for (key in array) {
-		if (array[key].innerHTML == data.cityName) {
+		if (array[key].innerHTML == data.cityName || data.cityName == '') {
 			//document.getElementsByClassName('location-wrapper-cover')[0].parentNode.removeChild(document.getElementsByClassName('location-wrapper-cover')[0]);
 			return;
 		}
 	}
 
+	
 	var newLocation = document.createElement('div');
 	newLocation.className = 'location-list';
 	newLocation.innerHTML = '\

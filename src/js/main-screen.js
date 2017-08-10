@@ -181,6 +181,7 @@ this.setMainPageInnerHTML = function() {
 			lsArray.push(cities);
 			localStorage.setItem('cities', JSON.stringify(lsArray));
 			this.getMainPageWeatherData(coordsToString);
+			console.log(cities['city']);
 					
 		}.bind(this));
 		return;
