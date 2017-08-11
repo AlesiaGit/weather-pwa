@@ -432,6 +432,8 @@ var MainScreen = function (coords) {
 
 	//this.widget = widget;
 	this.coords = coords;
+	this.cityName = '';
+	this.coordsToString = '';
 
 	document.body.innerHTML = '';
 	this.widget = document.createElement('div');
@@ -517,11 +519,11 @@ var MainScreen = function (coords) {
 	</div>\
 	<ul class="dropdown-list-style">\
 		<div class="dropdown-divider"></div>\
-		<a class="dropdown-link js-change-location">Изменить местоположение</a>\
+		<a href="" class="dropdown-link js-change-location">Изменить местоположение</a>\
 		<div class="dropdown-divider"></div>\
 		<a class="dropdown-link js-share">Поделиться</a>\
 		<div class="dropdown-divider"></div>\
-		<a class="dropdown-link js-settings">Настройки</a>\
+		<a href="" class="dropdown-link js-settings">Настройки</a>\
 	</ul>';
 
 		//document.body.appendChild(dropdownList);
@@ -531,12 +533,11 @@ var MainScreen = function (coords) {
 		topCloseBtn.addEventListener('click', this.closeDropdownList.bind(this));
 
 		document.querySelector('.js-change-location').href = '#change-location';
+		document.querySelector('.js-share').addEventListener('click', this.showShareScreen.bind(this));
 		document.querySelector('.js-settings').href = '#settings=' + window.location.hash.split('=').pop();
 	};
 
 	this.closeDropdownList = function () {
-		//document.body.removeChild(document.querySelector('.widget-wrapper-cover'));
-		//document.body.removeChild(document.querySelector('.dropdown-list'));
 		this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
 		this.widget.removeChild(document.querySelector('.dropdown-list'));
 	};
@@ -572,10 +573,12 @@ var MainScreen = function (coords) {
 					elem['data'] = data;
 					document.querySelector('.top-city').innerHTML = elem['city'];
 					//console.log(elem['city']);
+					this.coordsToString = elem['coords'];
+					this.cityName = elem['city'];
 				}
 			});
 			localStorage.setItem('cities', JSON.stringify(lsArray));
-		});
+		}.bind(this));
 	};
 
 	this.setMainPageInnerHTML = function () {
@@ -613,6 +616,47 @@ var MainScreen = function (coords) {
 		}
 	};
 
+	this.showShareScreen = function () {
+		this.closeDropdownList();
+
+		var wrapper = document.createElement('div');
+		wrapper.className = 'widget-wrapper-cover';
+		this.widget.appendChild(wrapper);
+
+		var shareBlock = document.createElement('div');
+		shareBlock.className = 'share-block';
+		shareBlock.innerHTML = '\
+		<div class="share-title">Поделиться</div>\
+		<div class="share-icons">\
+			<a href="" class="ssk ssk-lg ssk-rounded ssk-tumblr share-item"></a>\
+			<a href="" class="ssk ssk-lg ssk-rounded ssk-pinterest share-item"></a>\
+			<a href="" class="ssk ssk-lg ssk-rounded ssk-vk share-item"></a>\
+			<a href="" class="ssk ssk-lg ssk-rounded ssk-google-plus share-item"></a>\
+		</div>\
+		<div class="share-divider"></div>\
+		<a href="" class="share-cancel-btn">Отмена</a>';
+
+		this.widget.appendChild(shareBlock);
+
+		SocialShareKit.init({
+			selector: '.ssk',
+			url: '',
+			text: 'Here is weather from my weather widget'
+		});
+
+		var links = document.getElementsByClassName('ssk');
+		for (var i = 0; i < links.length; i++) {
+			links[i].addEventListener('click', this.hideShareScreen.bind(this));
+		}
+
+		document.getElementsByClassName('share-cancel-btn')[0].addEventListener('click', this.hideShareScreen.bind(this));
+	};
+
+	this.hideShareScreen = function () {
+		this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
+		this.widget.removeChild(document.querySelector('.share-block'));
+	};
+
 	this.setMainPageInnerHTML();
 
 	document.querySelector('.top-dropdown').addEventListener('click', this.showDropdownList.bind(this));
@@ -629,6 +673,7 @@ var Map = function () {
 		<div class="location-map" id="YMapsID">\
 			<div class="location-search-wrapper">\
 				<input class="location-search" placeholder="Введите название города..." autofocus>\
+				<a class="location-search-btn"><i class="fa fa-search fa-lg"></i></a>\
 				<a href="#change-location" class="location-confirm-btn"><i class="fa fa-check fa-lg"></i></a>\
 			</div>\
 		</div>\
@@ -648,7 +693,7 @@ var Map = function () {
 			zoom: 10,
 			autoFitToViewport: 'always'
 		});
-		this.getNewCoordinates();
+		this.getNewCityDetails();
 
 		//убираем лишние блоки yandex map
 		document.getElementsByClassName('ymaps-copyrights-pane')[0].style.display = 'none';
@@ -656,13 +701,13 @@ var Map = function () {
 		//по клику на карту перерисовываем карту
 		myMap.events.add('click', function (event) {
 			coords = event.get('coordPosition');
-			this.getNewCoordinates();
+			this.getNewCityDetails();
 		}.bind(this));
 
 		//при перетягивании карты перерисовыааем карту
 		myMap.events.add('boundschange', function (event) {
 			if (event.get('newCenter') != event.get('oldCenter')) {
-				this.getNewCoordinates();
+				this.getNewCityDetails();
 			}
 		}.bind(this));
 	};
@@ -676,54 +721,52 @@ var Map = function () {
 		return arrayFromString;
 	};
 
-	this.getNewCoordinates = function () {
+	this.getNewCityDetails = function () {
 		var center = myMap.getCenter();
 		var newCenter = [center[0].toFixed(6), center[1].toFixed(6)];
 		this.coordsToString = newCenter.join(',');
 
-		//фетчим координаты центра карты для получения названия города	
-		this.draggedCityName(this.coordsToString);
-	};
-
-	this.draggedCityName = function (coordsToString) {
-		return fetch('https://geocode-maps.yandex.ru/1.x/?geocode=' + coordsToString + '&sco=latlong&kind=locality&format=json').then(function (req) {
-			return req.json();
-		}).then(function (data) {
-			var name = data.response.GeoObjectCollection.featureMember["0"].GeoObject.name;
-			document.getElementsByClassName('location-search')[0].placeholder = name;
-			this.cityName = name;
-		});
-	};
-
-	this.searchCityByName = function (addr) {
-		return fetch('https://geocode-maps.yandex.ru/1.x/?geocode=' + addr + '&sco=latlong&kind=locality&format=json').then(function (req) {
+		return fetch('https://geocode-maps.yandex.ru/1.x/?geocode=' + this.coordsToString + '&sco=latlong&kind=locality&format=json').then(function (req) {
 			return req.json();
 		}).then(function (data) {
 			this.cityName = data.response.GeoObjectCollection.featureMember["0"].GeoObject.name;
-			this.coordsToString = this.stringCoordsToArray(data.response.GeoObjectCollection.featureMember["0"].GeoObject.Point.pos).join(',');
-			this.addNewCityToList();
+			document.getElementsByClassName('location-search')[0].placeholder = this.cityName;
 		}.bind(this));
 	};
 
-	this.addCityToFavorites = function () {
-		if (document.getElementsByClassName('location-search')[0].value != "") {
-			var addr = document.getElementsByClassName('location-search')[0].value;
-			this.searchCityByName(addr);
+	this.searchCityByName = function () {
+		var name = document.getElementsByClassName('location-search')[0].value;
+		if (name == '') {
 			return;
 		}
+		console.log(name);
+		return fetch('https://geocode-maps.yandex.ru/1.x/?geocode=' + name + '&sco=latlong&kind=locality&format=json').then(function (req) {
+			return req.json();
+		}).then(function (data) {
+			var coords = this.stringCoordsToArray(data.response.GeoObjectCollection.featureMember["0"].GeoObject.Point.pos);
+			myMap.setCenter(coords, 10);
 
-		this.addNewCityToList();
+			this.getNewCityDetails();
+			document.getElementsByClassName('location-search')[0].value = '';
+		}.bind(this));
 	};
 
 	this.addNewCityToList = function () {
-		eventBus.trigger('add-city', { cityName: this.cityName, coordsToString: this.coordsToString });
+		if (document.getElementsByClassName('location-search')[0].placeholder != document.getElementsByClassName('current-city')[0].innerHTML) {
+			eventBus.trigger('add-city', { cityName: this.cityName, coordsToString: this.coordsToString });
+		} else {
+			document.getElementsByClassName('widget')[0].removeChild(document.getElementsByClassName('location-wrapper-cover')[0]);
+		}
 	};
 
 	//отрисовка карты yandex
 	ymaps.ready(this.initMap.bind(this));
 
+	document.querySelector('.location-search-btn').addEventListener('click', this.searchCityByName.bind(this));
+	document.querySelector('.location-confirm-btn').addEventListener('click', this.addNewCityToList.bind(this));
+
 	//по нажатию на кнопку добавляем выбранный город в список
-	document.querySelector('.location-confirm-btn').addEventListener('click', this.addCityToFavorites.bind(this));
+	//document.querySelector('.location-confirm-btn').addEventListener('click', this.addCityToFavorites.bind(this));
 };
 
 var Router = function (options) {
@@ -794,7 +837,6 @@ function toCelcius(temp) {
 	}
 }
 
-console.log(localStorage.getItem('wind-unit'));
 function toKilometers(speed) {
 	if (localStorage.getItem('wind-unit') == 'миль/ч') {
 		return (speed / 0.6213).toFixed(1) + ' миль/ч';

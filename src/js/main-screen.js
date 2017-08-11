@@ -2,6 +2,8 @@ var MainScreen = function (coords) {
 
 	//this.widget = widget;
 	this.coords = coords;
+	this.cityName = '';
+	this.coordsToString = '';
 
  	document.body.innerHTML = '';
  	this.widget = document.createElement('div');
@@ -89,11 +91,11 @@ this.showDropdownList = function () {
 	</div>\
 	<ul class="dropdown-list-style">\
 		<div class="dropdown-divider"></div>\
-		<a class="dropdown-link js-change-location">Изменить местоположение</a>\
+		<a href="" class="dropdown-link js-change-location">Изменить местоположение</a>\
 		<div class="dropdown-divider"></div>\
 		<a class="dropdown-link js-share">Поделиться</a>\
 		<div class="dropdown-divider"></div>\
-		<a class="dropdown-link js-settings">Настройки</a>\
+		<a href="" class="dropdown-link js-settings">Настройки</a>\
 	</ul>';
 
 	//document.body.appendChild(dropdownList);
@@ -104,13 +106,12 @@ this.showDropdownList = function () {
 
 
 	document.querySelector('.js-change-location').href = '#change-location';
+	document.querySelector('.js-share').addEventListener('click', this.showShareScreen.bind(this));
 	document.querySelector('.js-settings').href =  '#settings=' + window.location.hash.split('=').pop();
 };
 
 
 this.closeDropdownList = function() {
-	//document.body.removeChild(document.querySelector('.widget-wrapper-cover'));
-	//document.body.removeChild(document.querySelector('.dropdown-list'));
 	this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
 	this.widget.removeChild(document.querySelector('.dropdown-list'));
 };
@@ -147,11 +148,14 @@ this.getMainPageWeatherData = function() {
 				elem['data'] = data;
 				document.querySelector('.top-city').innerHTML = elem['city'];
 				//console.log(elem['city']);
+				this.coordsToString = elem['coords'];
+				this.cityName = elem['city'];
 			}
 		});
 		localStorage.setItem('cities', JSON.stringify(lsArray));
 
-	});
+
+	}.bind(this));
 };
 
 
@@ -191,6 +195,54 @@ this.setMainPageInnerHTML = function() {
 			this.getMainPageWeatherData(coordsToString);
 	}
 };
+
+
+
+	this.showShareScreen = function() {
+		this.closeDropdownList();
+
+		var wrapper = document.createElement('div');
+		wrapper.className = 'widget-wrapper-cover';
+		this.widget.appendChild(wrapper);
+
+
+		var shareBlock = document.createElement('div');
+		shareBlock.className = 'share-block';
+		shareBlock.innerHTML = '\
+		<div class="share-title">Поделиться</div>\
+		<div class="share-icons">\
+			<a href="" class="ssk ssk-lg ssk-rounded ssk-tumblr share-item"></a>\
+			<a href="" class="ssk ssk-lg ssk-rounded ssk-pinterest share-item"></a>\
+			<a href="" class="ssk ssk-lg ssk-rounded ssk-vk share-item"></a>\
+			<a href="" class="ssk ssk-lg ssk-rounded ssk-google-plus share-item"></a>\
+		</div>\
+		<div class="share-divider"></div>\
+		<a href="" class="share-cancel-btn">Отмена</a>';
+
+		this.widget.appendChild(shareBlock);
+
+		SocialShareKit.init({
+		    selector: '.ssk',
+		    url: '',
+		    text: 'Here is weather from my weather widget',
+		});
+
+		var links = document.getElementsByClassName('ssk');
+		for (var i = 0; i < links.length; i++) {
+			links[i].addEventListener('click', this.hideShareScreen.bind(this));
+		
+		}
+		
+		document.getElementsByClassName('share-cancel-btn')[0].addEventListener('click', this.hideShareScreen.bind(this));
+	};
+
+
+	
+	this.hideShareScreen = function() {
+		this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
+		this.widget.removeChild(document.querySelector('.share-block'));
+	};
+
 
 
 	this.setMainPageInnerHTML();

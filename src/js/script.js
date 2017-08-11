@@ -23,7 +23,6 @@ function toCelcius(temp) {
 	
 }
 
-console.log(localStorage.getItem('wind-unit'));
 function toKilometers(speed) {
 	if (localStorage.getItem('wind-unit') == 'миль/ч') {
 		return ((speed)/0.6213).toFixed(1) + ' миль/ч';

@@ -9,6 +9,7 @@ var Map = function() {
 		<div class="location-map" id="YMapsID">\
 			<div class="location-search-wrapper">\
 				<input class="location-search" placeholder="Введите название города..." autofocus>\
+				<a class="location-search-btn"><i class="fa fa-search fa-lg"></i></a>\
 				<a href="#change-location" class="location-confirm-btn"><i class="fa fa-check fa-lg"></i></a>\
 			</div>\
 		</div>\
@@ -30,7 +31,7 @@ this.initMap = function() {
 		zoom: 10, 
         autoFitToViewport: 'always'
     });
-	this.getNewCoordinates();
+	this.getNewCityDetails();
 
 
 	//убираем лишние блоки yandex map
@@ -40,17 +41,18 @@ this.initMap = function() {
 	//по клику на карту перерисовываем карту
 	myMap.events.add('click', function(event) {        
 		coords = event.get('coordPosition');
-		this.getNewCoordinates();
+		this.getNewCityDetails();
 	}.bind(this));	
 
 
 	//при перетягивании карты перерисовыааем карту
 	myMap.events.add('boundschange', function(event) {
 		if (event.get('newCenter') != event.get('oldCenter')) {		
-			this.getNewCoordinates();
+			this.getNewCityDetails();
 		}
 	}.bind(this));
 };
+
 
 
 this.stringCoordsToArray = function(string) {
@@ -63,57 +65,59 @@ this.stringCoordsToArray = function(string) {
 };
 
 
-this.getNewCoordinates = function() {	
+
+this.getNewCityDetails = function() {	
 	var center = myMap.getCenter();
 	var newCenter = [center[0].toFixed(6), center[1].toFixed(6)];
 	this.coordsToString = newCenter.join(',');
 
-	//фетчим координаты центра карты для получения названия города	
-	this.draggedCityName(this.coordsToString);
-};
-
-
-this.draggedCityName = function(coordsToString) {
-	return fetch('https://geocode-maps.yandex.ru/1.x/?geocode=' + coordsToString + '&sco=latlong&kind=locality&format=json').then(function (req) {
-		return req.json();
-	}).then(function (data) {
-		var name = data.response.GeoObjectCollection.featureMember["0"].GeoObject.name;
-		document.getElementsByClassName('location-search')[0].placeholder = name;
-		this.cityName = name;
-	});
-};
-
-
-this.searchCityByName = function(addr) {
-	return fetch('https://geocode-maps.yandex.ru/1.x/?geocode=' + addr + '&sco=latlong&kind=locality&format=json').then(function (req) {
+	return fetch('https://geocode-maps.yandex.ru/1.x/?geocode=' + this.coordsToString + '&sco=latlong&kind=locality&format=json').then(function (req) {
 		return req.json();
 	}).then(function (data) {
 		this.cityName = data.response.GeoObjectCollection.featureMember["0"].GeoObject.name;
-		this.coordsToString = this.stringCoordsToArray(data.response.GeoObjectCollection.featureMember["0"].GeoObject.Point.pos).join(',');
-		this.addNewCityToList();
+		document.getElementsByClassName('location-search')[0].placeholder = this.cityName;
 	}.bind(this));
 };
 
 
-this.addCityToFavorites = function() {
-	if (document.getElementsByClassName('location-search')[0].value != "") {
-		var addr = document.getElementsByClassName('location-search')[0].value;
-		this.searchCityByName(addr);
-		return;
-	} 
 
-	this.addNewCityToList();
+this.searchCityByName = function() {
+	var name = document.getElementsByClassName('location-search')[0].value;
+	if (name == '') {
+		return;
+	}
+	console.log(name);
+	return fetch('https://geocode-maps.yandex.ru/1.x/?geocode=' + name + '&sco=latlong&kind=locality&format=json').then(function (req) {
+		return req.json();
+	}).then(function (data) {
+		var coords = this.stringCoordsToArray(data.response.GeoObjectCollection.featureMember["0"].GeoObject.Point.pos);
+		myMap.setCenter(coords, 10);
+		
+		this.getNewCityDetails();
+		document.getElementsByClassName('location-search')[0].value = '';
+	}.bind(this));
 };
 
-this.addNewCityToList = function() {
-	eventBus.trigger('add-city', {cityName: this.cityName, coordsToString: this.coordsToString});
 
+
+this.addNewCityToList = function() {
+	if (document.getElementsByClassName('location-search')[0].placeholder != document.getElementsByClassName('current-city')[0].innerHTML) {
+		eventBus.trigger('add-city', {cityName: this.cityName, coordsToString: this.coordsToString});
+	} else {
+		document.getElementsByClassName('widget')[0].removeChild(document.getElementsByClassName('location-wrapper-cover')[0]);
+	}
 };
 
 	//отрисовка карты yandex
 	ymaps.ready(this.initMap.bind(this));
 
+
+	document.querySelector('.location-search-btn').addEventListener('click', this.searchCityByName.bind(this));
+	document.querySelector('.location-confirm-btn').addEventListener('click', this.addNewCityToList.bind(this));
+
+
+
 	//по нажатию на кнопку добавляем выбранный город в список
-	document.querySelector('.location-confirm-btn').addEventListener('click', this.addCityToFavorites.bind(this));
+	//document.querySelector('.location-confirm-btn').addEventListener('click', this.addCityToFavorites.bind(this));
 
 }
