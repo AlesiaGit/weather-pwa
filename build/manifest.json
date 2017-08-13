@@ -2,7 +2,7 @@
     "dir": "ltr",
     "lang": "en",
     "name": "Weather widget PWA",
-    "scope": "/weather-pwa/build/index.html",
+    "scope": "/weather-pwa/build/",
     "display": "standalone",
     "start_url": "https://alesiagit.github.io/weather-pwa/build/index.html",
     "short_name": "Weather",
@@ -14,91 +14,91 @@
     "prefer_related_applications": false,
     "icons": [
         {
-            "src": "/img/pwa/weather-pwa/build/img/favicon.ico",
+            "src": "weather-pwa/build/img/pwa/weather-pwa/build/img/favicon.ico",
             "sizes": "16x16"
         },
         {
-            "src": "/img/pwa/73ccf19d-24d6-c31b-f5e0-70b5c7375905.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/73ccf19d-24d6-c31b-f5e0-70b5c7375905.webPlatform.png",
             "sizes": "48x48",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/442b5076-feee-ada3-5c84-a85d01c095a7.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/442b5076-feee-ada3-5c84-a85d01c095a7.webPlatform.png",
             "sizes": "1240x600",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/4bb974e8-b7e9-053f-4dc2-b15955806082.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/4bb974e8-b7e9-053f-4dc2-b15955806082.webPlatform.png",
             "sizes": "300x300",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/3166f967-12d0-63d0-1429-e38c8912261e.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/3166f967-12d0-63d0-1429-e38c8912261e.webPlatform.png",
             "sizes": "88x88",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/86047885-8906-92d2-9dee-c84b65a4921c.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/86047885-8906-92d2-9dee-c84b65a4921c.webPlatform.png",
             "sizes": "24x24",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/168fa1dc-00b4-9d1c-9725-e161b5301a41.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/168fa1dc-00b4-9d1c-9725-e161b5301a41.webPlatform.png",
             "sizes": "50x50",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/548d5385-ed7f-f3a6-e1de-8b475256b5c5.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/548d5385-ed7f-f3a6-e1de-8b475256b5c5.webPlatform.png",
             "sizes": "620x300",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/0eceb1cb-417f-360c-c434-d80d817867d1.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/0eceb1cb-417f-360c-c434-d80d817867d1.webPlatform.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/6a93c763-d7d7-3fa9-0db6-3e029750d51a.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/6a93c763-d7d7-3fa9-0db6-3e029750d51a.webPlatform.png",
             "sizes": "144x144",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/4cc30895-dc1c-f696-793c-9d8d0366e50f.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/4cc30895-dc1c-f696-793c-9d8d0366e50f.webPlatform.png",
             "sizes": "96x96",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/485cd8d2-03ad-8d36-7d27-9b5ab5c73157.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/485cd8d2-03ad-8d36-7d27-9b5ab5c73157.webPlatform.png",
             "sizes": "72x72",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/6aeeb4b9-243c-3d89-8e40-8d874fadcc1e.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/6aeeb4b9-243c-3d89-8e40-8d874fadcc1e.webPlatform.png",
             "sizes": "36x36",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/308ab77f-1349-3425-ddbc-21c725000638.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/308ab77f-1349-3425-ddbc-21c725000638.webPlatform.png",
             "sizes": "1024x1024",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/5af5f4d0-23d1-760c-8351-7bd88c9a90bc.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/5af5f4d0-23d1-760c-8351-7bd88c9a90bc.webPlatform.png",
             "sizes": "180x180",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/e4ca2df8-15f0-1d1a-7c7c-6fae32ddb6f1.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/e4ca2df8-15f0-1d1a-7c7c-6fae32ddb6f1.webPlatform.png",
             "sizes": "152x152",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/2b979523-1c19-7235-9205-b822a771580e.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/2b979523-1c19-7235-9205-b822a771580e.webPlatform.png",
             "sizes": "120x120",
             "type": "image/png"
         },
         {
-            "src": "/img/pwa/7ecd2b1c-ab2f-1636-ccf0-b8fe54fd45ba.webPlatform.png",
+            "src": "weather-pwa/build/img/pwa/7ecd2b1c-ab2f-1636-ccf0-b8fe54fd45ba.webPlatform.png",
             "sizes": "76x76",
             "type": "image/png"
         }

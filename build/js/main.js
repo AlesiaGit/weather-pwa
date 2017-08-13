@@ -628,10 +628,10 @@ var MainScreen = function (coords) {
 		shareBlock.innerHTML = '\
 		<div class="share-title">Поделиться</div>\
 		<div class="share-icons">\
-			<a href="" class="ssk ssk-lg ssk-rounded ssk-tumblr share-item"></a>\
-			<a href="" class="ssk ssk-lg ssk-rounded ssk-pinterest share-item"></a>\
-			<a href="" class="ssk ssk-lg ssk-rounded ssk-vk share-item"></a>\
-			<a href="" class="ssk ssk-lg ssk-rounded ssk-google-plus share-item"></a>\
+			<a href="" class="ssk share-item share-item-tumblr"></a>\
+			<a href="" class="ssk share-item share-item-pinterest"></a>\
+			<a href="" class="ssk share-item share-item-vk"></a>\
+			<a href="" class="ssk share-item share-item-google-plus"></a>\
 		</div>\
 		<div class="share-divider"></div>\
 		<a href="" class="share-cancel-btn">Отмена</a>';

@@ -872,6 +872,7 @@ ul {
 .share-title {
 	font-size: 16px;
 	font-weight: bold;
+	padding-top: 15px;
 }
 
 .share-icons {
@@ -888,8 +889,20 @@ ul {
 }
 
 .share-item {
+	font-family: "social-share-kit";
 	margin-left: 15px;
 	margin-right: 15px;
+	font-size: 22px;
+	border-radius: 15%;
+	padding: 9px;
+}
+
+.share-item:before {
+	font-family: "social-share-kit";
+	font-size: 28px;
+	position: relative;
+    top: 0;
+    vertical-align: middle;
 }
 
 .share-item:first-child {
@@ -904,3 +917,35 @@ ul {
 	text-decoration: none;
 }
 
+.share-item-tumblr {
+	background-color: #395773;
+}
+
+.share-item-tumblr:before {
+	content: "f";
+}
+
+.share-item-pinterest {
+	background-color: #BD081C;
+}
+
+.share-item-pinterest:before {
+	content: "e";
+	transform: scale(.9);
+}
+
+.share-item-vk {
+	background-color: #54769a;
+}
+
+.share-item-vk:before {
+	content: "i";
+}
+
+.share-item-google-plus {
+	background-color: #EA4335;
+}
+
+.share-item-google-plus:before {
+	content: "v";
+}
