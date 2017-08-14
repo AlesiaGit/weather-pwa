@@ -15,33 +15,19 @@ var CitiesList = function () {
 	<div class="location-header-divider"></div>\
 	</div>\
 	<div class="location-block"></div>';
-
-
-	//document.body.appendChild(this.locationScreen);
 	this.widget.appendChild(this.locationScreen);
 
-	this.locationScreenBottom = document.createElement('div');
 
+	this.locationScreenBottom = document.createElement('div');
 	this.locationScreenBottom.className = 'bottom-location';
 	this.locationScreenBottom.innerHTML = '\
 	<a href="#map" class="location-add-btn"></a>\
 	<a class="location-delete-btn"></a>\
 	<div class="add-del-btn-descr">Добавить</div>';
-
-	//document.body.appendChild(this.locationScreenBottom);
 	this.widget.appendChild(this.locationScreenBottom);
 
 	
-	//выстроить DOM из данных localStorage
-	
 
-	//показать карту по клику
-	//document.querySelector('.location-add-btn').addEventListener('click', showMapScreen);
-
-	//собрать данные города, по которому кликнули
-	//document.querySelector('.location-block').addEventListener('click', getCityDetailsOnClick);
-
-	
 	this.buildDomFromLocalStorage = function() {
 
 		ymaps.ready(function() {
@@ -49,33 +35,35 @@ var CitiesList = function () {
 
 			lsArray = JSON.parse(localStorage.getItem('cities')) || [];
 			lsArray.forEach(function(elem) {
-				var newLocation = document.createElement('div');
-				newLocation.className = 'location-list';
-				newLocation.innerHTML = '\
-				<a class="location-item" href="#">\
-				<div class="location-city"></div>\
-				<input type="checkbox" class="location-city-del">\
-				</a>\
-				<div class="location-divider"></div>';
-
-				newLocation.getElementsByClassName('location-city-del')[0].style.display = 'none';
-				newLocation.getElementsByClassName('location-item')[0].href = '#today=' + elem['coords'];
-
-				if (elem['city'] == cityName) {
-					newLocation.getElementsByClassName('location-city')[0].innerHTML = '<span class="current-city">' + elem['city'] + '</span><i class="fa fa-map-marker my-location-marker"></i></div>';
-					document.getElementsByClassName('location-block')[0].insertBefore(newLocation, document.getElementsByClassName('location-block')[0].firstChild);
-
-					var comment = document.createElement('div');
-					comment.className = 'location-comment';
-					comment.innerHTML = 'Текущее местоположение';
-					newLocation.getElementsByClassName('location-item')[0].appendChild(comment);
-
+				if (elem['city'] == undefined || elem['coords'] == undefined) {
+					lsArray.splice(lsArray.indexOf(elem), 1);
 				} else {
-					newLocation.getElementsByClassName('location-city')[0].innerHTML = elem['city'];
-					document.getElementsByClassName('location-block')[0].appendChild(newLocation);
+					var newLocation = document.createElement('div');
+					newLocation.className = 'location-list';
+					newLocation.innerHTML = '\
+					<a class="location-item" href="#">\
+					<div class="location-city"></div>\
+					<input type="checkbox" class="location-city-del">\
+					</a>\
+					<div class="location-divider"></div>';
+
+					newLocation.getElementsByClassName('location-city-del')[0].style.display = 'none';
+					newLocation.getElementsByClassName('location-item')[0].href = '#today=' + elem['coords'];
+
+					if (elem['city'] == cityName) {
+						newLocation.getElementsByClassName('location-city')[0].innerHTML = '<span class="current-city">' + elem['city'] + '</span><i class="fa fa-map-marker my-location-marker"></i></div>';
+						document.getElementsByClassName('location-block')[0].insertBefore(newLocation, document.getElementsByClassName('location-block')[0].firstChild);
+
+						var comment = document.createElement('div');
+						comment.className = 'location-comment';
+						comment.innerHTML = 'Текущее местоположение';
+						newLocation.getElementsByClassName('location-item')[0].appendChild(comment);
+
+					} else {
+						newLocation.getElementsByClassName('location-city')[0].innerHTML = elem['city'];
+						document.getElementsByClassName('location-block')[0].appendChild(newLocation);
+					}
 				}
-
-
 			});
 		});
 	};
@@ -108,13 +96,16 @@ var CitiesList = function () {
 				lsArray.forEach(function(elem) {
 					if (elem['city'] == checkboxArray[i].parentNode.getElementsByClassName('location-city')[0].innerHTML) {
 						lsArray.splice(lsArray.indexOf(elem), 1);
+						localStorage.setItem('cities', JSON.stringify(lsArray));
 					}
 				});
-				localStorage.setItem('cities', JSON.stringify(lsArray));
-
 				checkboxArray[i].parentNode.parentNode.parentNode.removeChild(checkboxArray[i].parentNode.parentNode);
+				checkboxArray.length -= 1;
+				i -= 1;
+
 			}
 		}
+		
 
 		for (var i = 0; i < checkboxArray.length; i++) {
 			checkboxArray[i].checked = false;

@@ -14,30 +14,15 @@ var CitiesList = function () {
 	<div class="location-header-divider"></div>\
 	</div>\
 	<div class="location-block"></div>';
-
-	//document.body.appendChild(this.locationScreen);
 	this.widget.appendChild(this.locationScreen);
 
 	this.locationScreenBottom = document.createElement('div');
-
 	this.locationScreenBottom.className = 'bottom-location';
 	this.locationScreenBottom.innerHTML = '\
 	<a href="#map" class="location-add-btn"></a>\
 	<a class="location-delete-btn"></a>\
 	<div class="add-del-btn-descr">Добавить</div>';
-
-	//document.body.appendChild(this.locationScreenBottom);
 	this.widget.appendChild(this.locationScreenBottom);
-
-	//выстроить DOM из данных localStorage
-
-
-	//показать карту по клику
-	//document.querySelector('.location-add-btn').addEventListener('click', showMapScreen);
-
-	//собрать данные города, по которому кликнули
-	//document.querySelector('.location-block').addEventListener('click', getCityDetailsOnClick);
-
 
 	this.buildDomFromLocalStorage = function () {
 
@@ -46,29 +31,33 @@ var CitiesList = function () {
 
 			lsArray = JSON.parse(localStorage.getItem('cities')) || [];
 			lsArray.forEach(function (elem) {
-				var newLocation = document.createElement('div');
-				newLocation.className = 'location-list';
-				newLocation.innerHTML = '\
-				<a class="location-item" href="#">\
-				<div class="location-city"></div>\
-				<input type="checkbox" class="location-city-del">\
-				</a>\
-				<div class="location-divider"></div>';
-
-				newLocation.getElementsByClassName('location-city-del')[0].style.display = 'none';
-				newLocation.getElementsByClassName('location-item')[0].href = '#today=' + elem['coords'];
-
-				if (elem['city'] == cityName) {
-					newLocation.getElementsByClassName('location-city')[0].innerHTML = '<span class="current-city">' + elem['city'] + '</span><i class="fa fa-map-marker my-location-marker"></i></div>';
-					document.getElementsByClassName('location-block')[0].insertBefore(newLocation, document.getElementsByClassName('location-block')[0].firstChild);
-
-					var comment = document.createElement('div');
-					comment.className = 'location-comment';
-					comment.innerHTML = 'Текущее местоположение';
-					newLocation.getElementsByClassName('location-item')[0].appendChild(comment);
+				if (elem['city'] == undefined || elem['coords'] == undefined) {
+					lsArray.splice(lsArray.indexOf(elem), 1);
 				} else {
-					newLocation.getElementsByClassName('location-city')[0].innerHTML = elem['city'];
-					document.getElementsByClassName('location-block')[0].appendChild(newLocation);
+					var newLocation = document.createElement('div');
+					newLocation.className = 'location-list';
+					newLocation.innerHTML = '\
+					<a class="location-item" href="#">\
+					<div class="location-city"></div>\
+					<input type="checkbox" class="location-city-del">\
+					</a>\
+					<div class="location-divider"></div>';
+
+					newLocation.getElementsByClassName('location-city-del')[0].style.display = 'none';
+					newLocation.getElementsByClassName('location-item')[0].href = '#today=' + elem['coords'];
+
+					if (elem['city'] == cityName) {
+						newLocation.getElementsByClassName('location-city')[0].innerHTML = '<span class="current-city">' + elem['city'] + '</span><i class="fa fa-map-marker my-location-marker"></i></div>';
+						document.getElementsByClassName('location-block')[0].insertBefore(newLocation, document.getElementsByClassName('location-block')[0].firstChild);
+
+						var comment = document.createElement('div');
+						comment.className = 'location-comment';
+						comment.innerHTML = 'Текущее местоположение';
+						newLocation.getElementsByClassName('location-item')[0].appendChild(comment);
+					} else {
+						newLocation.getElementsByClassName('location-city')[0].innerHTML = elem['city'];
+						document.getElementsByClassName('location-block')[0].appendChild(newLocation);
+					}
 				}
 			});
 		});
@@ -100,11 +89,12 @@ var CitiesList = function () {
 				lsArray.forEach(function (elem) {
 					if (elem['city'] == checkboxArray[i].parentNode.getElementsByClassName('location-city')[0].innerHTML) {
 						lsArray.splice(lsArray.indexOf(elem), 1);
+						localStorage.setItem('cities', JSON.stringify(lsArray));
 					}
 				});
-				localStorage.setItem('cities', JSON.stringify(lsArray));
-
 				checkboxArray[i].parentNode.parentNode.parentNode.removeChild(checkboxArray[i].parentNode.parentNode);
+				checkboxArray.length -= 1;
+				i -= 1;
 			}
 		}
 
@@ -430,7 +420,6 @@ var Extended = function (backHash) {
 
 var MainScreen = function (coords) {
 
-	//this.widget = widget;
 	this.coords = coords;
 	this.cityName = '';
 	this.coordsToString = '';
@@ -454,7 +443,6 @@ var MainScreen = function (coords) {
 			<div class="top-other-info"><span class="top-city"></span> | <span class="top-descr"></span></div>\
 		</div>';
 
-	//document.body.appendChild(this.mainScreen);
 	this.widget.appendChild(this.mainScreen);
 
 	this.mainScreenFooter = document.createElement('div');
@@ -502,13 +490,11 @@ var MainScreen = function (coords) {
 			<div class="divider"></div>\
 			<div class="bottom-link"><a href="#" class="bottom-link-style">Прогноз на 5 дней</a></div>';
 
-	//document.body.appendChild(this.mainScreenFooter);
 	this.widget.appendChild(this.mainScreenFooter);
 
 	this.showDropdownList = function () {
 		var wrapper = document.createElement('div');
 		wrapper.className = 'widget-wrapper-cover';
-		//document.body.appendChild(wrapper);
 		this.widget.appendChild(wrapper);
 
 		var dropdownList = document.createElement('div');
@@ -526,7 +512,6 @@ var MainScreen = function (coords) {
 		<a href="" class="dropdown-link js-settings">Настройки</a>\
 	</ul>';
 
-		//document.body.appendChild(dropdownList);
 		this.widget.appendChild(dropdownList);
 
 		var topCloseBtn = document.querySelector('.dropdown-close');
@@ -544,7 +529,6 @@ var MainScreen = function (coords) {
 
 	this.getMainPageWeatherData = function () {
 		var coords = this.coords;
-		//console.log(coords);
 		if (!coords) return;
 		return fetch('https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/14b2f0cd9db914c3bbf4ab5e43ac514d/' + coords).then(function (req) {
 			return req.json();
@@ -572,7 +556,6 @@ var MainScreen = function (coords) {
 				if (elem['coords'] == coords) {
 					elem['data'] = data;
 					document.querySelector('.top-city').innerHTML = elem['city'];
-					//console.log(elem['city']);
 					this.coordsToString = elem['coords'];
 					this.cityName = elem['city'];
 				}
@@ -739,7 +722,6 @@ var Map = function () {
 		if (name == '') {
 			return;
 		}
-		console.log(name);
 		return fetch('https://geocode-maps.yandex.ru/1.x/?geocode=' + name + '&sco=latlong&kind=locality&format=json').then(function (req) {
 			return req.json();
 		}).then(function (data) {
@@ -764,9 +746,6 @@ var Map = function () {
 
 	document.querySelector('.location-search-btn').addEventListener('click', this.searchCityByName.bind(this));
 	document.querySelector('.location-confirm-btn').addEventListener('click', this.addNewCityToList.bind(this));
-
-	//по нажатию на кнопку добавляем выбранный город в список
-	//document.querySelector('.location-confirm-btn').addEventListener('click', this.addCityToFavorites.bind(this));
 };
 
 var Router = function (options) {
@@ -815,7 +794,9 @@ Router.prototype = {
 	}
 };
 
-//window.onload = new MainScreen();
+window.onload = function () {
+	location.hash = '';
+};
 
 var mainScreenCity;
 var myMap;
@@ -924,35 +905,6 @@ function windBearing(num) {
 var chartDataMax = [];
 var chartDataMin = [];
 var chartLabels = [];
-
-// =================================================================
-// Routes
-// =================================================================
-
-/*var router = new Router({
-  routes: [{
-    name: 'index',
-    match: '',
-    onEnter: () => {
-        console.log('<index');
-        if (myMap)  { myMap.close(); 
-        console.log('index>');
-    }
-  }, {
-    name: 'map',
-    match: (text) => text === 'map',
-    onEnter: () => {
-        console.log('<map');
-        myMap = new Map();
-        console.log('map>');
-    }
-  }, {
-    name: 'settings',
-    match: /settings=(.+)/,
-    onEnter: (coords) => new Settings(coords),
-  }]
-});
- */
 
 var Settings = function (backHash) {
 

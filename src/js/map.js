@@ -86,7 +86,6 @@ this.searchCityByName = function() {
 	if (name == '') {
 		return;
 	}
-	console.log(name);
 	return fetch('https://geocode-maps.yandex.ru/1.x/?geocode=' + name + '&sco=latlong&kind=locality&format=json').then(function (req) {
 		return req.json();
 	}).then(function (data) {
@@ -114,10 +113,5 @@ this.addNewCityToList = function() {
 
 	document.querySelector('.location-search-btn').addEventListener('click', this.searchCityByName.bind(this));
 	document.querySelector('.location-confirm-btn').addEventListener('click', this.addNewCityToList.bind(this));
-
-
-
-	//по нажатию на кнопку добавляем выбранный город в список
-	//document.querySelector('.location-confirm-btn').addEventListener('click', this.addCityToFavorites.bind(this));
 
 }

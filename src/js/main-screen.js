@@ -1,6 +1,5 @@
 var MainScreen = function (coords) {
 
-	//this.widget = widget;
 	this.coords = coords;
 	this.cityName = '';
 	this.coordsToString = '';
@@ -24,7 +23,6 @@ var MainScreen = function (coords) {
 			<div class="top-other-info"><span class="top-city"></span> | <span class="top-descr"></span></div>\
 		</div>';
 
-	//document.body.appendChild(this.mainScreen);
 	this.widget.appendChild(this.mainScreen);
 
 	this.mainScreenFooter = document.createElement('div');
@@ -72,7 +70,6 @@ var MainScreen = function (coords) {
 			<div class="divider"></div>\
 			<div class="bottom-link"><a href="#" class="bottom-link-style">Прогноз на 5 дней</a></div>';
 
-	//document.body.appendChild(this.mainScreenFooter);
 	this.widget.appendChild(this.mainScreenFooter);
 
 
@@ -80,7 +77,6 @@ var MainScreen = function (coords) {
 this.showDropdownList = function () {
 	var wrapper = document.createElement('div');
 	wrapper.className = 'widget-wrapper-cover';
-	//document.body.appendChild(wrapper);
 	this.widget.appendChild(wrapper);
 
 	var dropdownList = document.createElement('div');
@@ -98,7 +94,6 @@ this.showDropdownList = function () {
 		<a href="" class="dropdown-link js-settings">Настройки</a>\
 	</ul>';
 
-	//document.body.appendChild(dropdownList);
 	this.widget.appendChild(dropdownList);
 
 	var topCloseBtn = document.querySelector('.dropdown-close');
@@ -119,7 +114,6 @@ this.closeDropdownList = function() {
 
 this.getMainPageWeatherData = function() {
 	var coords = this.coords;
-	//console.log(coords);
 	if(!coords) return;
 	return fetch('https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/14b2f0cd9db914c3bbf4ab5e43ac514d/' + coords).then(function (req) {
 		return req.json();
@@ -147,7 +141,6 @@ this.getMainPageWeatherData = function() {
 			if (elem['coords'] == coords) {
 				elem['data'] = data;
 				document.querySelector('.top-city').innerHTML = elem['city'];
-				//console.log(elem['city']);
 				this.coordsToString = elem['coords'];
 				this.cityName = elem['city'];
 			}

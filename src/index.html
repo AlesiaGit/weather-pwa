@@ -38,23 +38,11 @@
 			new MainScreen();
 			console.log('index>');
 		}
-	}, /*{
-		name: 'map',
-		match: text => text === 'map',
-		onEnter: () => {
-			console.log('<map');
-			myMap = new Map();
-			console.log('map>');
-		}
-	},*/ {
+	}, {
 		name: 'settings',
 		match: /settings=(.+)/,
 		onEnter: coords => new Settings(coords)
-	}, /*{
-		name: 'main-screen',
-		match: /(\d\d\.\d\d\d\d\d\d,\d\d\.\d\d\d\d\d\d)/,
-		onEnter: coords => showMainScreen()
-	},*/ {
+	}, {
 		name: 'main-screen',
 		match: /today=(.+)/,
 		onEnter: coords => new MainScreen(coords)

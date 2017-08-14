@@ -1,4 +1,6 @@
-//window.onload = new MainScreen();
+window.onload = function() {
+	location.hash = '';
+}
 
 var mainScreenCity; 
 var myMap;
@@ -97,34 +99,4 @@ var chartDataMax = [];
 var chartDataMin = [];
 var chartLabels = [];
 
-
-
-// =================================================================
-// Routes
-// =================================================================
-
-/*var router = new Router({
-  routes: [{
-    name: 'index',
-    match: '',
-    onEnter: () => {
-        console.log('<index');
-        if (myMap)  { myMap.close(); 
-        console.log('index>');
-    }
-  }, {
-    name: 'map',
-    match: (text) => text === 'map',
-    onEnter: () => {
-        console.log('<map');
-        myMap = new Map();
-        console.log('map>');
-    }
-  }, {
-    name: 'settings',
-    match: /settings=(.+)/,
-    onEnter: (coords) => new Settings(coords),
-  }]
-});
- */
 
