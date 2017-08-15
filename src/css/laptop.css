@@ -917,12 +917,14 @@ ul {
 	text-decoration: none;
 }
 
-.share-item-tumblr {
-	background-color: #395773;
+.share-item-facebook {
+	background-color: #3B5998;
 }
 
-.share-item-tumblr:before {
-	content: "f";
+.share-item-facebook:before {
+	content: "a";
+    text-indent: 4px;
+    margin-right: -4px;
 }
 
 .share-item-pinterest {

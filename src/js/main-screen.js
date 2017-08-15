@@ -74,120 +74,120 @@ var MainScreen = function (coords) {
 
 
 
-this.showDropdownList = function () {
-	var wrapper = document.createElement('div');
-	wrapper.className = 'widget-wrapper-cover';
-	this.widget.appendChild(wrapper);
+	this.showDropdownList = function () {
+		var wrapper = document.createElement('div');
+		wrapper.className = 'widget-wrapper-cover';
+		this.widget.appendChild(wrapper);
 
-	var dropdownList = document.createElement('div');
-	dropdownList.className = 'dropdown-list';
-	dropdownList.innerHTML = '\
-	<div class="dropdown-close-btn-wrapper">\
-		<a class="dropdown-close"></a>\
-	</div>\
-	<ul class="dropdown-list-style">\
-		<div class="dropdown-divider"></div>\
-		<a href="" class="dropdown-link js-change-location">Изменить местоположение</a>\
-		<div class="dropdown-divider"></div>\
-		<a class="dropdown-link js-share">Поделиться</a>\
-		<div class="dropdown-divider"></div>\
-		<a href="" class="dropdown-link js-settings">Настройки</a>\
-	</ul>';
+		var dropdownList = document.createElement('div');
+		dropdownList.className = 'dropdown-list';
+		dropdownList.innerHTML = '\
+		<div class="dropdown-close-btn-wrapper">\
+			<a class="dropdown-close"></a>\
+		</div>\
+		<ul class="dropdown-list-style">\
+			<div class="dropdown-divider"></div>\
+			<a href="" class="dropdown-link js-change-location">Изменить местоположение</a>\
+			<div class="dropdown-divider"></div>\
+			<a class="dropdown-link js-share">Поделиться</a>\
+			<div class="dropdown-divider"></div>\
+			<a href="" class="dropdown-link js-settings">Настройки</a>\
+		</ul>';
 
-	this.widget.appendChild(dropdownList);
+		this.widget.appendChild(dropdownList);
 
-	var topCloseBtn = document.querySelector('.dropdown-close');
-	topCloseBtn.addEventListener('click', this.closeDropdownList.bind(this));
-
-
-	document.querySelector('.js-change-location').href = '#change-location';
-	document.querySelector('.js-share').addEventListener('click', this.showShareScreen.bind(this));
-	document.querySelector('.js-settings').href =  '#settings=' + window.location.hash.split('=').pop();
-};
+		var topCloseBtn = document.querySelector('.dropdown-close');
+		topCloseBtn.addEventListener('click', this.closeDropdownList.bind(this));
 
 
-this.closeDropdownList = function() {
-	this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
-	this.widget.removeChild(document.querySelector('.dropdown-list'));
-};
+		document.querySelector('.js-change-location').href = '#change-location';
+		document.querySelector('.js-share').addEventListener('click', this.showShareScreen.bind(this));
+		document.querySelector('.js-settings').href =  '#settings=' + window.location.hash.split('=').pop();
+	};
 
 
-this.getMainPageWeatherData = function() {
-	var coords = this.coords;
-	if(!coords) return;
-	return fetch('https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/14b2f0cd9db914c3bbf4ab5e43ac514d/' + coords).then(function (req) {
-		return req.json();
-	}).then(function (data) {
-
-		var d = new Date();
-		var weekday = d.getDay();
-		var weekdaysArray = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
-		days = ["Сегодня", "Завтра", weekdaysArray[(weekday + 2)%7]];
-
-		document.querySelector('.top-temp').innerHTML = toCelcius(data.currently.apparentTemperature);
-		document.querySelector('.top-descr').innerHTML = iconToDescr(data.currently.icon);
-		
-		for (var i = 0; i < days.length; i++) {
-			var parent = document.getElementsByClassName('extended-data')[i];
-			parent.querySelector('.extended-max').innerHTML = toCelcius(data.daily.data[i].apparentTemperatureMax);
-			parent.querySelector('.extended-min').innerHTML = toCelcius(data.daily.data[i].apparentTemperatureMin);
-			parent.querySelector('.extended-weekday').innerHTML = days[i];
-			parent.querySelector('.extended-descr').innerHTML = iconToDescr(data.daily.data[i].icon);
-			parent.querySelector('.extended-day').firstElementChild.className = 'extended-icon ' + data.daily.data[i].icon;
-		}
-
-		lsArray = JSON.parse(localStorage.getItem('cities')) || [];
-		lsArray.forEach(function(elem) {
-			if (elem['coords'] == coords) {
-				elem['data'] = data;
-				document.querySelector('.top-city').innerHTML = elem['city'];
-				this.coordsToString = elem['coords'];
-				this.cityName = elem['city'];
-			}
-		});
-		localStorage.setItem('cities', JSON.stringify(lsArray));
+	this.closeDropdownList = function() {
+		this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
+		this.widget.removeChild(document.querySelector('.dropdown-list'));
+	};
 
 
-	}.bind(this));
-};
+	this.getMainPageWeatherData = function() {
+		var coords = this.coords;
+		if(!coords) return;
+		return fetch('https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/14b2f0cd9db914c3bbf4ab5e43ac514d/' + coords).then(function (req) {
+			return req.json();
+		}).then(function (data) {
 
+			var d = new Date();
+			var weekday = d.getDay();
+			var weekdaysArray = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+			days = ["Сегодня", "Завтра", weekdaysArray[(weekday + 2)%7]];
 
-
-this.setMainPageInnerHTML = function() {
-	if (window.location.hash == '') {
-		ymaps.ready(function() {
-			cityName = ymaps.geolocation.city;
-			coordsToString = ymaps.geolocation.latitude + ',' + ymaps.geolocation.longitude;
-
-			document.getElementsByClassName('top-city')[0].innerHTML = cityName;
-			document.querySelector('.bottom-link-style').href = '#extended=' + coordsToString;
-			document.querySelector('.more-info').href = 'https://darksky.net/forecast/' + coordsToString + '/si24/en';
-			window.location.hash = '#today=' + coordsToString;
+			document.querySelector('.top-temp').innerHTML = toCelcius(data.currently.apparentTemperature);
+			document.querySelector('.top-descr').innerHTML = iconToDescr(data.currently.icon);
 			
+			for (var i = 0; i < days.length; i++) {
+				var parent = document.getElementsByClassName('extended-data')[i];
+				parent.querySelector('.extended-max').innerHTML = toCelcius(data.daily.data[i].apparentTemperatureMax);
+				parent.querySelector('.extended-min').innerHTML = toCelcius(data.daily.data[i].apparentTemperatureMin);
+				parent.querySelector('.extended-weekday').innerHTML = days[i];
+				parent.querySelector('.extended-descr').innerHTML = iconToDescr(data.daily.data[i].icon);
+				parent.querySelector('.extended-day').firstElementChild.className = 'extended-icon ' + data.daily.data[i].icon;
+			}
+
 			lsArray = JSON.parse(localStorage.getItem('cities')) || [];
 			lsArray.forEach(function(elem) {
-				if (elem['city'] == cityName) {
-					lsArray.splice(lsArray.indexOf(elem), 1);
+				if (elem['coords'] == coords) {
+					elem['data'] = data;
+					document.querySelector('.top-city').innerHTML = elem['city'];
+					this.coordsToString = elem['coords'];
+					this.cityName = elem['city'];
 				}
 			});
-
-			var cities = {};
-			cities['city'] = cityName;
-			cities['coords'] = coordsToString;
-			cities['data'] = '';
-			lsArray.push(cities);
 			localStorage.setItem('cities', JSON.stringify(lsArray));
-			this.getMainPageWeatherData(coordsToString);
-					
+
+
 		}.bind(this));
-		return;
-	} else {
-			coordsToString = location.hash.split('=').pop()
-			document.querySelector('.bottom-link-style').href = '#extended=' + coordsToString;
-			document.querySelector('.more-info').href = 'https://darksky.net/forecast/' + coordsToString + '/si24/en';
-			this.getMainPageWeatherData(coordsToString);
-	}
-};
+	};
+
+
+
+	this.setMainPageInnerHTML = function() {
+		if (window.location.hash == '') {
+			ymaps.ready(function() {
+				cityName = ymaps.geolocation.city;
+				coordsToString = ymaps.geolocation.latitude + ',' + ymaps.geolocation.longitude;
+
+				document.getElementsByClassName('top-city')[0].innerHTML = cityName;
+				document.querySelector('.bottom-link-style').href = '#extended=' + coordsToString;
+				document.querySelector('.more-info').href = 'https://darksky.net/forecast/' + coordsToString + '/si24/en';
+				window.location.hash = '#today=' + coordsToString;
+				
+				lsArray = JSON.parse(localStorage.getItem('cities')) || [];
+				lsArray.forEach(function(elem) {
+					if (elem['city'] == cityName) {
+						lsArray.splice(lsArray.indexOf(elem), 1);
+					}
+				});
+
+				var cities = {};
+				cities['city'] = cityName;
+				cities['coords'] = coordsToString;
+				cities['data'] = '';
+				lsArray.push(cities);
+				localStorage.setItem('cities', JSON.stringify(lsArray));
+				this.getMainPageWeatherData(coordsToString);
+						
+			}.bind(this));
+			return;
+		} else {
+				coordsToString = location.hash.split('=').pop()
+				document.querySelector('.bottom-link-style').href = '#extended=' + coordsToString;
+				document.querySelector('.more-info').href = 'https://darksky.net/forecast/' + coordsToString + '/si24/en';
+				this.getMainPageWeatherData(coordsToString);
+		}
+	};
 
 
 
@@ -204,7 +204,7 @@ this.setMainPageInnerHTML = function() {
 		shareBlock.innerHTML = '\
 		<div class="share-title">Поделиться</div>\
 		<div class="share-icons">\
-			<a href="" class="ssk share-item share-item-tumblr"></a>\
+			<a href="" class="ssk share-item share-item-facebook"></a>\
 			<a href="" class="ssk share-item share-item-pinterest"></a>\
 			<a href="" class="ssk share-item share-item-vk"></a>\
 			<a href="" class="ssk share-item share-item-google-plus"></a>\

@@ -5,28 +5,31 @@ var gulp = require('gulp'),
     prefixer = require('gulp-autoprefixer'),
     uglify = require('gulp-uglify'),
     cssmin = require('gulp-minify-css'),
+    fontmin = require('gulp-fontmin'),
+    imagemin = require('gulp-imagemin'),
     rimraf = require('rimraf'),
     browserSync = require("browser-sync"),
+    
     reload = browserSync.reload;
 
 var path = {
-    build: { //Тут мы укажем куда складывать готовые после сборки файлы
-        html: 'build/',
+    build: {
+    	html: 'build/', 
         js: 'build/js/',
         css: 'build/css/',
         img: 'build/img/',
         fonts: 'build/fonts/',
         libs: 'build/libs/'
     },
-    src: { //Пути откуда брать исходники
-        html: 'src/*.*', //Синтаксис src/*.html говорит gulp что мы хотим взять все файлы с расширением .html
-        js: 'src/js/**/*.js',//В стилях и скриптах нам понадобятся только main файлы
+    src: { 
+        html: 'src/*.*', 
+        js: 'src/js/**/*.js',
         style: 'src/css/**/*.css',
-        img: 'src/img/**/*.*', //Синтаксис img/**/*.* означает - взять все файлы всех расширений из папки и из вложенных каталогов
+        img: 'src/img/**/*.*',
         fonts: 'src/fonts/**/*.*',
         libs: 'src/libs/**/*.*'
     },
-    watch: { //Тут мы укажем, за изменением каких файлов мы хотим наблюдать
+    watch: { 
         html: 'src/*.*',
         js: 'src/js/**/*.js',
         style: 'src/css/**/*.css',
@@ -48,39 +51,38 @@ var config = {
 };
 
 gulp.task('html:build', function () {
-    gulp.src(path.src.html) //Выберем файлы по нужному пути
-        .pipe(gulp.dest(path.build.html)) //Выплюнем их в папку build
-        .pipe(reload({stream: true})); //И перезагрузим наш сервер для обновлений
+    gulp.src(path.src.html) 
+        .pipe(gulp.dest(path.build.html)) 
+        .pipe(reload({stream: true})); 
 });
 
 gulp.task('js:build', function () {
-    gulp.src(path.src.js) //Найдем наш main файл
+    gulp.src(path.src.js) 
      .pipe(concat('main.js'))
-        
-       
-        //.pipe(gulp.dest(path.build.js)) //Выплюнем готовый файл в build
-        .pipe(babel())
-        .pipe(gulp.dest(path.build.js)) //Выплюнем готовый файл в build
-        .pipe(reload({stream: true})); //И перезагрузим сервер
+     .pipe(babel())
+    .pipe(gulp.dest(path.build.js)) 
+    .pipe(reload({stream: true})); 
         
 });
 
 gulp.task('style:build', function () {
-    gulp.src(path.src.style) //Выберем наш main.css
-        .pipe(prefixer()) //Добавим вендорные префиксы
-        .pipe(cssmin()) //Сожмем
-        .pipe(gulp.dest(path.build.css)) //И в build
+    gulp.src(path.src.style)
+        .pipe(prefixer())
+        .pipe(cssmin())
+        .pipe(gulp.dest(path.build.css))
         .pipe(reload({stream: true}));
 });
 
 gulp.task('image:build', function () {
-    gulp.src(path.src.img) //Выберем наши картинки
-        .pipe(gulp.dest(path.build.img)) //И бросим в build
+    gulp.src(path.src.img)
+    	.pipe(imagemin())
+        .pipe(gulp.dest(path.build.img))
         .pipe(reload({stream: true}));
 });
 
 gulp.task('fonts:build', function() {
     gulp.src(path.src.fonts)
+    	.pipe(fontmin())
         .pipe(gulp.dest(path.build.fonts))
 });
 

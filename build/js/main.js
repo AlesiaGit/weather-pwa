@@ -500,17 +500,17 @@ var MainScreen = function (coords) {
 		var dropdownList = document.createElement('div');
 		dropdownList.className = 'dropdown-list';
 		dropdownList.innerHTML = '\
-	<div class="dropdown-close-btn-wrapper">\
-		<a class="dropdown-close"></a>\
-	</div>\
-	<ul class="dropdown-list-style">\
-		<div class="dropdown-divider"></div>\
-		<a href="" class="dropdown-link js-change-location">Изменить местоположение</a>\
-		<div class="dropdown-divider"></div>\
-		<a class="dropdown-link js-share">Поделиться</a>\
-		<div class="dropdown-divider"></div>\
-		<a href="" class="dropdown-link js-settings">Настройки</a>\
-	</ul>';
+		<div class="dropdown-close-btn-wrapper">\
+			<a class="dropdown-close"></a>\
+		</div>\
+		<ul class="dropdown-list-style">\
+			<div class="dropdown-divider"></div>\
+			<a href="" class="dropdown-link js-change-location">Изменить местоположение</a>\
+			<div class="dropdown-divider"></div>\
+			<a class="dropdown-link js-share">Поделиться</a>\
+			<div class="dropdown-divider"></div>\
+			<a href="" class="dropdown-link js-settings">Настройки</a>\
+		</ul>';
 
 		this.widget.appendChild(dropdownList);
 
@@ -611,7 +611,7 @@ var MainScreen = function (coords) {
 		shareBlock.innerHTML = '\
 		<div class="share-title">Поделиться</div>\
 		<div class="share-icons">\
-			<a href="" class="ssk share-item share-item-tumblr"></a>\
+			<a href="" class="ssk share-item share-item-facebook"></a>\
 			<a href="" class="ssk share-item share-item-pinterest"></a>\
 			<a href="" class="ssk share-item share-item-vk"></a>\
 			<a href="" class="ssk share-item share-item-google-plus"></a>\
