@@ -22,9 +22,11 @@ EventBus.prototype = {
       (this.listeners[event] || []).forEach(function (callback) {
         return callback(data);
       });
+
       (this.listeners['once' + event] || []).forEach(function (callback) {
         return callback(data);
       });
+      
       this.listeners['once' + event] = [];
     },
 

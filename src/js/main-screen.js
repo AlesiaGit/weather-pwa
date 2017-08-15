@@ -106,13 +106,18 @@ var MainScreen = function (coords) {
 	};
 
 
+
 	this.closeDropdownList = function() {
+
 		this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
 		this.widget.removeChild(document.querySelector('.dropdown-list'));
+
 	};
 
 
+
 	this.getMainPageWeatherData = function() {
+
 		var coords = this.coords;
 		if(!coords) return;
 		return fetch('https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/14b2f0cd9db914c3bbf4ab5e43ac514d/' + coords).then(function (req) {
@@ -154,6 +159,7 @@ var MainScreen = function (coords) {
 
 
 	this.setMainPageInnerHTML = function() {
+
 		if (window.location.hash == '') {
 			ymaps.ready(function() {
 				cityName = ymaps.geolocation.city;
@@ -192,6 +198,7 @@ var MainScreen = function (coords) {
 
 
 	this.showShareScreen = function() {
+
 		this.closeDropdownList();
 
 		var wrapper = document.createElement('div');
@@ -232,8 +239,10 @@ var MainScreen = function (coords) {
 
 	
 	this.hideShareScreen = function() {
+
 		this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
 		this.widget.removeChild(document.querySelector('.share-block'));
+		
 	};
 
 

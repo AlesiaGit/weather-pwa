@@ -1,18 +1,18 @@
 var CitiesList = function () {
 
 	document.body.innerHTML = '';
- 	this.widget = document.createElement('div');
- 	this.widget.className = 'widget';
- 	document.body.appendChild(this.widget);
+	this.widget = document.createElement('div');
+	this.widget.className = 'widget';
+	document.body.appendChild(this.widget);
 
 
 	this.locationScreen = document.createElement('div');
 	this.locationScreen.className = 'widget-wrapper-location';
 	this.locationScreen.innerHTML = '\
 	<div class="location-header">\
-	<button class="location-change-btn">Изменить</button>\
-	<button class="location-cancel-change-btn">Отменить</button>\
-	<div class="location-header-divider"></div>\
+		<button class="location-change-btn">Изменить</button>\
+		<button class="location-cancel-change-btn">Отменить</button>\
+		<div class="location-header-divider"></div>\
 	</div>\
 	<div class="location-block"></div>';
 	this.widget.appendChild(this.locationScreen);
@@ -31,10 +31,12 @@ var CitiesList = function () {
 	this.buildDomFromLocalStorage = function() {
 
 		ymaps.ready(function() {
+
 			cityName = ymaps.geolocation.city;
 
 			lsArray = JSON.parse(localStorage.getItem('cities')) || [];
 			lsArray.forEach(function(elem) {
+
 				if (elem['city'] == undefined || elem['coords'] == undefined) {
 					lsArray.splice(lsArray.indexOf(elem), 1);
 				} else {
@@ -42,8 +44,8 @@ var CitiesList = function () {
 					newLocation.className = 'location-list';
 					newLocation.innerHTML = '\
 					<a class="location-item" href="#">\
-					<div class="location-city"></div>\
-					<input type="checkbox" class="location-city-del">\
+						<div class="location-city"></div>\
+						<input type="checkbox" class="location-city-del">\
 					</a>\
 					<div class="location-divider"></div>';
 
@@ -68,6 +70,8 @@ var CitiesList = function () {
 		});
 	};
 
+
+
 	this.changeCityList = function() {
 		
 		var checkboxArray = document.getElementsByClassName('location-city-del');
@@ -86,7 +90,9 @@ var CitiesList = function () {
 	};
 
 
+
 	this.deleteCityFromList = function() {
+
 		var checkboxArray = document.getElementsByClassName('location-city-del');
 
 		for (var i = 0; i < checkboxArray.length; i++) {
@@ -117,8 +123,10 @@ var CitiesList = function () {
 		document.getElementsByClassName('add-del-btn-descr')[0].innerHTML = 'Добавить';
 		document.getElementsByClassName('location-change-btn')[0].style.display = 'block';
 		document.getElementsByClassName('location-cancel-change-btn')[0].style.display = 'none';
-	
+
 	}
+
+
 
 	this.cancelChangeCityList = function() {
 		
@@ -137,53 +145,49 @@ var CitiesList = function () {
 	};
 
 
+
 	this.addNewCityToList = function(data) {
-	var array = document.getElementsByClassName('location-city');
 
-	//проверяем, чтобы не было города в списке
-	for (key in array) {
-		if (array[key].innerHTML == data.cityName) {
-			//document.getElementsByClassName('location-wrapper-cover')[0].parentNode.removeChild(document.getElementsByClassName('location-wrapper-cover')[0]);
-			return;
+		var array = document.getElementsByClassName('location-city');
+
+		for (key in array) {
+			if (array[key].innerHTML == data.cityName) {
+				return;
+			}
 		}
-	}
 
-	var newLocation = document.createElement('div');
-	newLocation.className = 'location-list';
-	newLocation.innerHTML = '\
-	<a class="location-item" href="#">\
-		<div class="location-city"></div>\
-		<input type="checkbox" class="location-city-del">\
-	</a>\
-	<div class="location-divider"></div>';
+		var newLocation = document.createElement('div');
+		newLocation.className = 'location-list';
+		newLocation.innerHTML = '\
+		<a class="location-item" href="#">\
+			<div class="location-city"></div>\
+			<input type="checkbox" class="location-city-del">\
+		</a>\
+		<div class="location-divider"></div>';
 
-	//добавляем имя города & href в элемент
-	newLocation.getElementsByClassName('location-city-del')[0].style.display = 'none';
-	newLocation.getElementsByClassName('location-city')[0].innerHTML = data.cityName;
-	newLocation.getElementsByClassName('location-item')[0].href = '#today=' + data.coordsToString;
-	document.getElementsByClassName('location-block')[0].appendChild(newLocation);
+		newLocation.getElementsByClassName('location-city-del')[0].style.display = 'none';
+		newLocation.getElementsByClassName('location-city')[0].innerHTML = data.cityName;
+		newLocation.getElementsByClassName('location-item')[0].href = '#today=' + data.coordsToString;
+		document.getElementsByClassName('location-block')[0].appendChild(newLocation);
 
-	//добавить сохранение координат в ls
-	var cities = {};
-	cities['city'] = data.cityName;
-	cities['coords'] = data.coordsToString;
-	cities['data'] = '';
-	lsArray.push(cities);
-	localStorage.setItem('cities', JSON.stringify(lsArray));
+		var cities = {};
+		cities['city'] = data.cityName;
+		cities['coords'] = data.coordsToString;
+		cities['data'] = '';
+		lsArray.push(cities);
+		localStorage.setItem('cities', JSON.stringify(lsArray));
 
-};
+	};
 
 
 	this.buildDomFromLocalStorage();
 
-	//включить опцию изменения списка
 	document.querySelector('.location-change-btn').addEventListener('click', this.changeCityList);
 
-	//удаляем выбранные города
 	document.querySelector('.location-delete-btn').addEventListener('click', this.deleteCityFromList);
 
-	//отменяем изменение списка городов
 	document.querySelector('.location-cancel-change-btn').addEventListener('click', this.cancelChangeCityList);
 
 	eventBus.on('add-city', this.addNewCityToList.bind(this));
+
 }

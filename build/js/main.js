@@ -9,9 +9,9 @@ var CitiesList = function () {
 	this.locationScreen.className = 'widget-wrapper-location';
 	this.locationScreen.innerHTML = '\
 	<div class="location-header">\
-	<button class="location-change-btn">Изменить</button>\
-	<button class="location-cancel-change-btn">Отменить</button>\
-	<div class="location-header-divider"></div>\
+		<button class="location-change-btn">Изменить</button>\
+		<button class="location-cancel-change-btn">Отменить</button>\
+		<div class="location-header-divider"></div>\
 	</div>\
 	<div class="location-block"></div>';
 	this.widget.appendChild(this.locationScreen);
@@ -27,10 +27,12 @@ var CitiesList = function () {
 	this.buildDomFromLocalStorage = function () {
 
 		ymaps.ready(function () {
+
 			cityName = ymaps.geolocation.city;
 
 			lsArray = JSON.parse(localStorage.getItem('cities')) || [];
 			lsArray.forEach(function (elem) {
+
 				if (elem['city'] == undefined || elem['coords'] == undefined) {
 					lsArray.splice(lsArray.indexOf(elem), 1);
 				} else {
@@ -38,8 +40,8 @@ var CitiesList = function () {
 					newLocation.className = 'location-list';
 					newLocation.innerHTML = '\
 					<a class="location-item" href="#">\
-					<div class="location-city"></div>\
-					<input type="checkbox" class="location-city-del">\
+						<div class="location-city"></div>\
+						<input type="checkbox" class="location-city-del">\
 					</a>\
 					<div class="location-divider"></div>';
 
@@ -80,6 +82,7 @@ var CitiesList = function () {
 	};
 
 	this.deleteCityFromList = function () {
+
 		var checkboxArray = document.getElementsByClassName('location-city-del');
 
 		for (var i = 0; i < checkboxArray.length; i++) {
@@ -126,12 +129,11 @@ var CitiesList = function () {
 	};
 
 	this.addNewCityToList = function (data) {
+
 		var array = document.getElementsByClassName('location-city');
 
-		//проверяем, чтобы не было города в списке
 		for (key in array) {
 			if (array[key].innerHTML == data.cityName) {
-				//document.getElementsByClassName('location-wrapper-cover')[0].parentNode.removeChild(document.getElementsByClassName('location-wrapper-cover')[0]);
 				return;
 			}
 		}
@@ -139,19 +141,17 @@ var CitiesList = function () {
 		var newLocation = document.createElement('div');
 		newLocation.className = 'location-list';
 		newLocation.innerHTML = '\
-	<a class="location-item" href="#">\
-		<div class="location-city"></div>\
-		<input type="checkbox" class="location-city-del">\
-	</a>\
-	<div class="location-divider"></div>';
+		<a class="location-item" href="#">\
+			<div class="location-city"></div>\
+			<input type="checkbox" class="location-city-del">\
+		</a>\
+		<div class="location-divider"></div>';
 
-		//добавляем имя города & href в элемент
 		newLocation.getElementsByClassName('location-city-del')[0].style.display = 'none';
 		newLocation.getElementsByClassName('location-city')[0].innerHTML = data.cityName;
 		newLocation.getElementsByClassName('location-item')[0].href = '#today=' + data.coordsToString;
 		document.getElementsByClassName('location-block')[0].appendChild(newLocation);
 
-		//добавить сохранение координат в ls
 		var cities = {};
 		cities['city'] = data.cityName;
 		cities['coords'] = data.coordsToString;
@@ -162,13 +162,10 @@ var CitiesList = function () {
 
 	this.buildDomFromLocalStorage();
 
-	//включить опцию изменения списка
 	document.querySelector('.location-change-btn').addEventListener('click', this.changeCityList);
 
-	//удаляем выбранные города
 	document.querySelector('.location-delete-btn').addEventListener('click', this.deleteCityFromList);
 
-	//отменяем изменение списка городов
 	document.querySelector('.location-cancel-change-btn').addEventListener('click', this.cancelChangeCityList);
 
 	eventBus.on('add-city', this.addNewCityToList.bind(this));
@@ -197,9 +194,11 @@ EventBus.prototype = {
 		(this.listeners[event] || []).forEach(function (callback) {
 			return callback(data);
 		});
+
 		(this.listeners['once' + event] || []).forEach(function (callback) {
 			return callback(data);
 		});
+
 		this.listeners['once' + event] = [];
 	},
 
@@ -283,7 +282,6 @@ var Extended = function (backHash) {
 			</tbody>\
 		</table>';
 
-	//document.body.appendChild(this.extendedWrapper);
 	this.widget.appendChild(this.extendedWrapper);
 
 	this.ctx = document.getElementById("myChart");
@@ -381,7 +379,6 @@ var Extended = function (backHash) {
 	this.extendedFooter = document.createElement('div');
 	this.extendedFooter.className = 'bottom-extended';
 	this.extendedFooter.innerHTML = '<a href="#" class="extended-close-btn"></a>';
-	//document.body.appendChild(this.extendedFooter);
 	this.widget.appendChild(this.extendedFooter);
 
 	this.closeExtendedBtn = document.getElementsByClassName('extended-close-btn')[0];
@@ -523,11 +520,13 @@ var MainScreen = function (coords) {
 	};
 
 	this.closeDropdownList = function () {
+
 		this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
 		this.widget.removeChild(document.querySelector('.dropdown-list'));
 	};
 
 	this.getMainPageWeatherData = function () {
+
 		var coords = this.coords;
 		if (!coords) return;
 		return fetch('https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/14b2f0cd9db914c3bbf4ab5e43ac514d/' + coords).then(function (req) {
@@ -565,6 +564,7 @@ var MainScreen = function (coords) {
 	};
 
 	this.setMainPageInnerHTML = function () {
+
 		if (window.location.hash == '') {
 			ymaps.ready(function () {
 				cityName = ymaps.geolocation.city;
@@ -600,6 +600,7 @@ var MainScreen = function (coords) {
 	};
 
 	this.showShareScreen = function () {
+
 		this.closeDropdownList();
 
 		var wrapper = document.createElement('div');
@@ -636,6 +637,7 @@ var MainScreen = function (coords) {
 	};
 
 	this.hideShareScreen = function () {
+
 		this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
 		this.widget.removeChild(document.querySelector('.share-block'));
 	};
@@ -662,12 +664,11 @@ var Map = function () {
 		</div>\
 	</div>';
 
-	//document.body.appendChild(this.mapScreen);
 	document.getElementsByClassName('widget')[0].appendChild(this.mapScreen);
 	document.getElementById('YMapsID').style.height = window.screen.height / 2 + 'px';
 
 	this.initMap = function () {
-		//всегда отстраиваем карту по текущей геолокации пользователя
+
 		var geolocation = ymaps.geolocation;
 		coords = [ymaps.geolocation.latitude, ymaps.geolocation.longitude];
 
@@ -678,16 +679,13 @@ var Map = function () {
 		});
 		this.getNewCityDetails();
 
-		//убираем лишние блоки yandex map
 		document.getElementsByClassName('ymaps-copyrights-pane')[0].style.display = 'none';
 
-		//по клику на карту перерисовываем карту
 		myMap.events.add('click', function (event) {
 			coords = event.get('coordPosition');
 			this.getNewCityDetails();
 		}.bind(this));
 
-		//при перетягивании карты перерисовыааем карту
 		myMap.events.add('boundschange', function (event) {
 			if (event.get('newCenter') != event.get('oldCenter')) {
 				this.getNewCityDetails();
@@ -696,6 +694,7 @@ var Map = function () {
 	};
 
 	this.stringCoordsToArray = function (string) {
+
 		var arr = string.split(' ');
 		var reverseArr = arr.reverse();
 		arrayFromString = reverseArr.map(function (element) {
@@ -705,6 +704,7 @@ var Map = function () {
 	};
 
 	this.getNewCityDetails = function () {
+
 		var center = myMap.getCenter();
 		var newCenter = [center[0].toFixed(6), center[1].toFixed(6)];
 		this.coordsToString = newCenter.join(',');
@@ -741,9 +741,7 @@ var Map = function () {
 		}
 	};
 
-	//отрисовка карты yandex
 	ymaps.ready(this.initMap.bind(this));
-
 	document.querySelector('.location-search-btn').addEventListener('click', this.searchCityByName.bind(this));
 	document.querySelector('.location-confirm-btn').addEventListener('click', this.addNewCityToList.bind(this));
 };
@@ -809,6 +807,10 @@ var daysExtended;
 var days;
 var selectedTempOption;
 var selectedWindOption;
+var wind;
+var chartDataMax = [];
+var chartDataMin = [];
+var chartLabels = [];
 
 function toCelcius(temp) {
 	if (localStorage.getItem('temp-unit') == 'F°') {
@@ -858,7 +860,6 @@ function iconToDescr(icon) {
 		case 'fog':
 			return 'Туман';
 			break;
-
 	}
 }
 
@@ -876,11 +877,8 @@ function toRegDate(stamp) {
 	} else {
 		mm = d.getMonth() + 1;
 	}
-
 	return dd + '.' + mm;
 }
-
-var wind;
 
 function windBearing(num) {
 	if (num < 11 || num >= 348) {
@@ -902,10 +900,6 @@ function windBearing(num) {
 	}
 }
 
-var chartDataMax = [];
-var chartDataMin = [];
-var chartLabels = [];
-
 var Settings = function (backHash) {
 
 	document.body.innerHTML = '';
@@ -922,27 +916,26 @@ var Settings = function (backHash) {
 		<div class="settings-divider settings-header-divider"></div>\
 	</div>\
 	<div class="settings-block">\
-	<div class="settings-block-title">Оповещения погоды</div>\
-	<div class="settings-divider settings-block-divider"></div>\
-	<div class="settings-block-body">\
-	<div class="settings-block-body-text"></div>\
-	<div class="settings-block-body-icon"></div>\
-	</div>\
+		<div class="settings-block-title">Оповещения погоды</div>\
+		<div class="settings-divider settings-block-divider"></div>\
+		<div class="settings-block-body">\
+			<div class="settings-block-body-text"></div>\
+			<div class="settings-block-body-icon"></div>\
+		</div>\
 	</div>\
 	<div class="settings-block">\
-	<div class="settings-block-title">Единица измерения</div>\
-	<div class="settings-divider settings-block-divider"></div>\
-	<a class="settings-block-body js-temp">\
-	<div class="settings-block-body-text">Единицы температуры</div>\
-	<div class="settings-block-body-icon"><span class="js-temp-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
-	</a>\
-	<a class="settings-block-body js-wind">\
-	<div class="settings-block-body-text">Скорость ветра</div>\
-	<div class="settings-block-body-icon"><span class="js-wind-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
-	</a>\
+		<div class="settings-block-title">Единица измерения</div>\
+		<div class="settings-divider settings-block-divider"></div>\
+		<a class="settings-block-body js-temp">\
+			<div class="settings-block-body-text">Единицы температуры</div>\
+			<div class="settings-block-body-icon"><span class="js-temp-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
+		</a>\
+		<a class="settings-block-body js-wind">\
+			<div class="settings-block-body-text">Скорость ветра</div>\
+			<div class="settings-block-body-icon"><span class="js-wind-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
+		</a>\
 	</div>';
 
-	//document.body.appendChild(this.settingsScreen);
 	this.widget.appendChild(this.settingsScreen);
 
 	this.settingsScreen.getElementsByClassName('js-temp-unit')[0].innerHTML = localStorage.getItem('temp-unit') || 'C°';
@@ -958,7 +951,6 @@ var Settings = function (backHash) {
 	this.showWindOptionsScreen = function () {
 		var wrapper = document.createElement('div');
 		wrapper.className = 'widget-wrapper-cover';
-		//document.body.appendChild(wrapper);
 		this.widget.appendChild(wrapper);
 
 		var optionsBlock = document.createElement('div');
@@ -968,7 +960,6 @@ var Settings = function (backHash) {
 		<div class="option-divider"></div>\
 		<a class="option-item">миль/ч</div>';
 
-		//document.body.appendChild(optionsBlock);
 		this.widget.appendChild(optionsBlock);
 
 		var selectedWindOption = localStorage.getItem('wind-unit') || 'км/ч';
@@ -1002,7 +993,6 @@ var Settings = function (backHash) {
 	this.showTempOptionsScreen = function () {
 		var wrapper = document.createElement('div');
 		wrapper.className = 'widget-wrapper-cover';
-		//document.body.appendChild(wrapper);
 		this.widget.appendChild(wrapper);
 
 		var optionsBlock = document.createElement('div');
@@ -1012,7 +1002,6 @@ var Settings = function (backHash) {
 		<div class="option-divider"></div>\
 		<a class="option-item">F°</div>';
 
-		//document.body.appendChild(optionsBlock);
 		this.widget.appendChild(optionsBlock);
 
 		var selectedTempOption = localStorage.getItem('temp-unit') || 'C°';

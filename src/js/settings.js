@@ -14,27 +14,26 @@ var Settings = function(backHash) {
 		<div class="settings-divider settings-header-divider"></div>\
 	</div>\
 	<div class="settings-block">\
-	<div class="settings-block-title">Оповещения погоды</div>\
-	<div class="settings-divider settings-block-divider"></div>\
-	<div class="settings-block-body">\
-	<div class="settings-block-body-text"></div>\
-	<div class="settings-block-body-icon"></div>\
-	</div>\
+		<div class="settings-block-title">Оповещения погоды</div>\
+		<div class="settings-divider settings-block-divider"></div>\
+		<div class="settings-block-body">\
+			<div class="settings-block-body-text"></div>\
+			<div class="settings-block-body-icon"></div>\
+		</div>\
 	</div>\
 	<div class="settings-block">\
-	<div class="settings-block-title">Единица измерения</div>\
-	<div class="settings-divider settings-block-divider"></div>\
-	<a class="settings-block-body js-temp">\
-	<div class="settings-block-body-text">Единицы температуры</div>\
-	<div class="settings-block-body-icon"><span class="js-temp-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
-	</a>\
-	<a class="settings-block-body js-wind">\
-	<div class="settings-block-body-text">Скорость ветра</div>\
-	<div class="settings-block-body-icon"><span class="js-wind-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
-	</a>\
+		<div class="settings-block-title">Единица измерения</div>\
+		<div class="settings-divider settings-block-divider"></div>\
+		<a class="settings-block-body js-temp">\
+			<div class="settings-block-body-text">Единицы температуры</div>\
+			<div class="settings-block-body-icon"><span class="js-temp-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
+		</a>\
+		<a class="settings-block-body js-wind">\
+			<div class="settings-block-body-text">Скорость ветра</div>\
+			<div class="settings-block-body-icon"><span class="js-wind-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
+		</a>\
 	</div>';
 
-	//document.body.appendChild(this.settingsScreen);
 	this.widget.appendChild(this.settingsScreen);
 
 	this.settingsScreen.getElementsByClassName('js-temp-unit')[0].innerHTML = localStorage.getItem('temp-unit') || 'C°';
@@ -54,9 +53,7 @@ var Settings = function(backHash) {
 	this.showWindOptionsScreen = function() {
 		var wrapper = document.createElement('div');
 		wrapper.className = 'widget-wrapper-cover';
-		//document.body.appendChild(wrapper);
 		this.widget.appendChild(wrapper);
-
 
 		var optionsBlock = document.createElement('div');
 		optionsBlock.className = 'options-block';
@@ -65,7 +62,6 @@ var Settings = function(backHash) {
 		<div class="option-divider"></div>\
 		<a class="option-item">миль/ч</div>';
 
-		//document.body.appendChild(optionsBlock);
 		this.widget.appendChild(optionsBlock);
 
 
@@ -83,6 +79,8 @@ var Settings = function(backHash) {
 
 	};
 
+
+
 	this.selectWindOption = function(event) {
 		var target = event.target;
 
@@ -99,10 +97,11 @@ var Settings = function(backHash) {
 		}					
 	};
 
+
+
 	this.showTempOptionsScreen = function() {
 		var wrapper = document.createElement('div');
 		wrapper.className = 'widget-wrapper-cover';
-		//document.body.appendChild(wrapper);
 		this.widget.appendChild(wrapper);
 
 		var optionsBlock = document.createElement('div');
@@ -112,7 +111,6 @@ var Settings = function(backHash) {
 		<div class="option-divider"></div>\
 		<a class="option-item">F°</div>';
 
-		//document.body.appendChild(optionsBlock);
 		this.widget.appendChild(optionsBlock);
 
 
@@ -129,6 +127,8 @@ var Settings = function(backHash) {
 		optionsBlock.addEventListener('click', this.selectTempOption.bind(this));
 
 	};
+
+
 
 	this.selectTempOption = function(event) {
 		var target = event.target;
@@ -150,7 +150,6 @@ var Settings = function(backHash) {
 	this.settingsScreen.getElementsByClassName('js-wind')[0].addEventListener('click', this.showWindOptionsScreen.bind(this));
 	this.settingsScreen.getElementsByClassName('js-temp')[0].addEventListener('click', this.showTempOptionsScreen.bind(this));
 	this.settingsScreen.getElementsByClassName('js-settings-title')[0].href = '#today=' + backHash;
-
 
 }
 
