@@ -72,7 +72,6 @@ var Extended = function(backHash) {
 			</tbody>\
 		</table>';
 
-	//document.body.appendChild(this.extendedWrapper);
 	this.widget.appendChild(this.extendedWrapper);
 
 	this.ctx = document.getElementById("myChart");
@@ -172,7 +171,6 @@ var Extended = function(backHash) {
 	this.extendedFooter = document.createElement('div');
 	this.extendedFooter.className = 'bottom-extended';
 	this.extendedFooter.innerHTML = '<a href="#" class="extended-close-btn"></a>';
-	//document.body.appendChild(this.extendedFooter);
 	this.widget.appendChild(this.extendedFooter);
 
 	this.closeExtendedBtn = document.getElementsByClassName('extended-close-btn')[0];

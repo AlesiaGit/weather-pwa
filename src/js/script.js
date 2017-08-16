@@ -1,4 +1,6 @@
-//window.onload = new MainScreen();
+window.onload = function() {
+	location.hash = '';
+}
 
 var mainScreenCity; 
 var myMap;
@@ -11,6 +13,10 @@ var daysExtended;
 var days;
 var selectedTempOption;
 var selectedWindOption;
+var wind;
+var chartDataMax = [];
+var chartDataMin = [];
+var chartLabels = [];
 
 
 
@@ -23,7 +29,8 @@ function toCelcius(temp) {
 	
 }
 
-console.log(localStorage.getItem('wind-unit'));
+
+
 function toKilometers(speed) {
 	if (localStorage.getItem('wind-unit') == 'миль/ч') {
 		return ((speed)/0.6213).toFixed(1) + ' миль/ч';
@@ -32,6 +39,7 @@ function toKilometers(speed) {
 	}
 	
 }
+
 
 
 function iconToDescr(icon) {
@@ -56,9 +64,9 @@ function iconToDescr(icon) {
 		break;
 		case 'fog': return 'Туман';
 		break;
-
 	}
 }
+
 
 
 function toRegDate(stamp) {
@@ -75,12 +83,10 @@ function toRegDate(stamp) {
 	} else {
 		mm = d.getMonth() + 1;
 	}
-
 	return dd + '.' + mm;
 }
 
 
-var wind;
 
 function windBearing(num) {
 	if (num < 11 || num >= 348) { return wind = 'С';}
@@ -94,38 +100,6 @@ function windBearing(num) {
 }
 
 
-var chartDataMax = [];
-var chartDataMin = [];
-var chartLabels = [];
 
 
-
-// =================================================================
-// Routes
-// =================================================================
-
-/*var router = new Router({
-  routes: [{
-    name: 'index',
-    match: '',
-    onEnter: () => {
-        console.log('<index');
-        if (myMap)  { myMap.close(); 
-        console.log('index>');
-    }
-  }, {
-    name: 'map',
-    match: (text) => text === 'map',
-    onEnter: () => {
-        console.log('<map');
-        myMap = new Map();
-        console.log('map>');
-    }
-  }, {
-    name: 'settings',
-    match: /settings=(.+)/,
-    onEnter: (coords) => new Settings(coords),
-  }]
-});
- */
 

@@ -1,21 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru-RU">
 <head>
 	<title>Weather widget PWA</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
+	<meta name="theme-color" content="white" />
 	<link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico' />
 	<link rel="stylesheet" href="libs/font-awesome/font-awesome.css" />
+	<link rel="stylesheet" href="libs/social-share-kit/css/social-share-kit.css" type="text/css"/>
 	<link rel="stylesheet" href="css/laptop.css" />
-	<link rel="stylesheet" media="screen and (min-resolution:2dppx)" href="css/mobile.css" />
+	<link rel="stylesheet" media="screen and (max-width:700px)" href="css/mobile.css" />
+	<link rel="stylesheet" media="screen and (min-resolution:2dppx) and (min-width: 700px)" href="css/mobile.css" />
+	<link rel="stylesheet" media="screen and (min-resolution:2dppx) and (min-width: 700px) and (min-aspect-ratio: 1/1)" href="css/laptop.css" />
+	<link rel="manifest" href="manifest.json"></link>
+    <script type="text/javascript" src="libs/manup.js"></script>
 
 </head>
 <body>
 	
-
-<script src="https://api-maps.yandex.ru/2.0/?load=package.full&lang=ru-RU" type="text/javascript"></script>
-<script src="js/main.js"></script>
-<script src="libs/chartjs/Chart.js"></script>
+<noscript>JS is not supported</noscript>
+<script type="text/javascript" src="libs/pwabuilder/pwabuilder-sw-register.js"></script>
+<script type="text/javascript" src="https://api-maps.yandex.ru/2.0/?load=package.full&lang=ru-RU" type="text/javascript"></script>
+<script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript" src="libs/chartjs/Chart.js"></script>
+<script type="text/javascript" src="libs/social-share-kit/js/social-share-kit.js"></script>
 <script>
 	var eventBus = new EventBus();
 
@@ -28,23 +36,11 @@
 			new MainScreen();
 			console.log('index>');
 		}
-	}, /*{
-		name: 'map',
-		match: text => text === 'map',
-		onEnter: () => {
-			console.log('<map');
-			myMap = new Map();
-			console.log('map>');
-		}
-	},*/ {
+	}, {
 		name: 'settings',
 		match: /settings=(.+)/,
 		onEnter: coords => new Settings(coords)
-	}, /*{
-		name: 'main-screen',
-		match: /(\d\d\.\d\d\d\d\d\d,\d\d\.\d\d\d\d\d\d)/,
-		onEnter: coords => showMainScreen()
-	},*/ {
+	}, {
 		name: 'main-screen',
 		match: /today=(.+)/,
 		onEnter: coords => new MainScreen(coords)
@@ -64,7 +60,6 @@
 
 	]
 });
-
 
 </script>
 </body>
