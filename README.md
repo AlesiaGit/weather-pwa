@@ -15,7 +15,7 @@ Weather widget is a PWA application allowing user to receive short-term and long
  - HTML/CSS;
  - [Yandex maps API](https://tech.yandex.ru/maps/) - cartographic service provider;
  - [DarkSky API](https://darksky.net/dev/docs) - weather data provider;
- - [Social share kit](socialsharekit.com) - social sharing tool;
+ - [Social share kit](http://socialsharekit.com) - social sharing tool;
  - [Charts.js](http://www.chartjs.org/) - JS charting tool.
 
 # Screens
