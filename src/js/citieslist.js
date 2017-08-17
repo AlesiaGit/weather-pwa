@@ -1,34 +1,48 @@
-var CitiesList = function () {
+class CitiesList {
 
-	document.body.innerHTML = '';
-	this.widget = document.createElement('div');
-	this.widget.className = 'widget';
-	document.body.appendChild(this.widget);
+	constructor() {
 
-
-	this.locationScreen = document.createElement('div');
-	this.locationScreen.className = 'widget-wrapper-location';
-	this.locationScreen.innerHTML = '\
-	<div class="location-header">\
-		<button class="location-change-btn">Изменить</button>\
-		<button class="location-cancel-change-btn">Отменить</button>\
-		<div class="location-header-divider"></div>\
-	</div>\
-	<div class="location-block"></div>';
-	this.widget.appendChild(this.locationScreen);
+		document.body.innerHTML = '';
+		this.widget = document.createElement('div');
+		this.widget.className = 'widget';
+		document.body.appendChild(this.widget);
 
 
-	this.locationScreenBottom = document.createElement('div');
-	this.locationScreenBottom.className = 'bottom-location';
-	this.locationScreenBottom.innerHTML = '\
-	<a href="#map" class="location-add-btn"></a>\
-	<a class="location-delete-btn"></a>\
-	<div class="add-del-btn-descr">Добавить</div>';
-	this.widget.appendChild(this.locationScreenBottom);
+		this.locationScreen = document.createElement('div');
+		this.locationScreen.className = 'widget-wrapper-location';
+		this.locationScreen.innerHTML = '\
+		<div class="location-header">\
+			<button class="location-change-btn">Изменить</button>\
+			<button class="location-cancel-change-btn">Отменить</button>\
+			<div class="location-header-divider"></div>\
+		</div>\
+		<div class="location-block"></div>';
+		this.widget.appendChild(this.locationScreen);
+
+
+		this.locationScreenBottom = document.createElement('div');
+		this.locationScreenBottom.className = 'bottom-location';
+		this.locationScreenBottom.innerHTML = '\
+		<a href="#map" class="location-add-btn"></a>\
+		<a class="location-delete-btn"></a>\
+		<div class="add-del-btn-descr">Добавить</div>';
+		this.widget.appendChild(this.locationScreenBottom);
+
+		this.buildDomFromLocalStorage();
+
+		document.querySelector('.location-change-btn').addEventListener('click', this.changeCityList);
+
+		document.querySelector('.location-delete-btn').addEventListener('click', this.deleteCityFromList);
+
+		document.querySelector('.location-cancel-change-btn').addEventListener('click', this.cancelChangeCityList);
+
+		eventBus.on('add-city', this.addNewCityToList.bind(this));
+
+	}
 
 	
 
-	this.buildDomFromLocalStorage = function() {
+	buildDomFromLocalStorage() {
 
 		ymaps.ready(function() {
 
@@ -68,11 +82,11 @@ var CitiesList = function () {
 				}
 			});
 		});
-	};
+	}
 
 
 
-	this.changeCityList = function() {
+	changeCityList() {
 		
 		var checkboxArray = document.getElementsByClassName('location-city-del');
 		for (var i = 0; i < checkboxArray.length; i++) {
@@ -87,31 +101,43 @@ var CitiesList = function () {
 		document.getElementsByClassName('location-change-btn')[0].style.display = 'none';
 		document.getElementsByClassName('location-cancel-change-btn')[0].style.display = 'block';
 
-	};
+	}
 
 
 
-	this.deleteCityFromList = function() {
+	deleteCityFromList() {
 
 		var checkboxArray = document.getElementsByClassName('location-city-del');
 
-		for (var i = 0; i < checkboxArray.length; i++) {
-			if (checkboxArray[i].checked) {
+		var elementsToDelete = Array.prototype.filter.call(checkboxArray, function (elem){
+			return elem.checked;
+		});
+		var namesToDelete = elementsToDelete.map(function(elem) {
+			return elem.parentNode.getElementsByClassName('location-city')[0].innerHTML;
+		});
 
-				lsArray = JSON.parse(localStorage.getItem('cities')) || [];
-				lsArray.forEach(function(elem) {
-					if (elem['city'] == checkboxArray[i].parentNode.getElementsByClassName('location-city')[0].innerHTML) {
-						lsArray.splice(lsArray.indexOf(elem), 1);
-						localStorage.setItem('cities', JSON.stringify(lsArray));
-					}
-				});
-				checkboxArray[i].parentNode.parentNode.parentNode.removeChild(checkboxArray[i].parentNode.parentNode);
-				checkboxArray.length -= 1;
-				i -= 1;
+		lsArray = JSON.parse(localStorage.getItem('cities')) || [];	
+		lsArray = lsArray.filter(function(elem) {
+			return namesToDelete.indexOf(elem['city']) < 0;
+		});
 
+		/*namesToDelete.forEach(function(cityName) {
+			var existing = lsArray.find(function(p) {
+				return	p['city'] === cityName;
+			});
+
+			var i = lsArray.indexOf(existing);
+			if (i >= 0) {
+				lsArray.splice(i, 1);
 			}
-		}
-		
+		});*/
+
+		localStorage.setItem('cities', JSON.stringify(lsArray));
+
+		elementsToDelete.forEach(function(elem) {
+			elem.parentNode.parentNode.parentNode.removeChild(elem.parentNode.parentNode);
+		});
+
 
 		for (var i = 0; i < checkboxArray.length; i++) {
 			checkboxArray[i].checked = false;
@@ -128,7 +154,7 @@ var CitiesList = function () {
 
 
 
-	this.cancelChangeCityList = function() {
+	cancelChangeCityList() {
 		
 		var checkboxArray = document.getElementsByClassName('location-city-del');
 		for (var i = 0; i < checkboxArray.length; i++) {
@@ -142,15 +168,15 @@ var CitiesList = function () {
 		document.getElementsByClassName('location-change-btn')[0].style.display = 'block';
 		document.getElementsByClassName('location-cancel-change-btn')[0].style.display = 'none';
 
-	};
+	}
 
 
 
-	this.addNewCityToList = function(data) {
-
+	addNewCityToList (data) {
+		
 		var array = document.getElementsByClassName('location-city');
 
-		for (key in array) {
+		for (var key in array) {
 			if (array[key].innerHTML == data.cityName) {
 				return;
 			}
@@ -177,17 +203,6 @@ var CitiesList = function () {
 		lsArray.push(cities);
 		localStorage.setItem('cities', JSON.stringify(lsArray));
 
-	};
-
-
-	this.buildDomFromLocalStorage();
-
-	document.querySelector('.location-change-btn').addEventListener('click', this.changeCityList);
-
-	document.querySelector('.location-delete-btn').addEventListener('click', this.deleteCityFromList);
-
-	document.querySelector('.location-cancel-change-btn').addEventListener('click', this.cancelChangeCityList);
-
-	eventBus.on('add-city', this.addNewCityToList.bind(this));
+	}
 
 }

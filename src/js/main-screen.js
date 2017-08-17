@@ -1,80 +1,89 @@
-var MainScreen = function (coords) {
+class MainScreen {
 
-	this.coords = coords;
-	this.cityName = '';
-	this.coordsToString = '';
+	constructor (coords) {
+		this.coords = coords;
 
- 	document.body.innerHTML = '';
- 	this.widget = document.createElement('div');
- 	this.widget.className = 'widget';
- 	document.body.appendChild(this.widget);
+		this.coords = coords;
+		this.cityName = '';
+		this.coordsToString = '';
 
-	 this.mainScreen = document.createElement('div');
-	 this.mainScreen.className = 'widget-wrapper';
-	 this.mainScreen.innerHTML = '\
-	 	<div class="top-main">\
-			<div class="top-data">\
-				<div class="top-temp-wrapper">\
-					<div class="top-temp"></div>\
-					<div class="top-celcius">°</div>\
+	 	document.body.innerHTML = '';
+	 	this.widget = document.createElement('div');
+	 	this.widget.className = 'widget';
+	 	document.body.appendChild(this.widget);
+
+		 this.mainScreen = document.createElement('div');
+		 this.mainScreen.className = 'widget-wrapper';
+		 this.mainScreen.innerHTML = '\
+		 	<div class="top-main">\
+				<div class="top-data">\
+					<div class="top-temp-wrapper">\
+						<div class="top-temp"></div>\
+						<div class="top-celcius">°</div>\
+					</div>\
+					<a class="top-dropdown"></a>\
 				</div>\
-				<a class="top-dropdown"></a>\
-			</div>\
-			<div class="top-other-info"><span class="top-city"></span> | <span class="top-descr"></span></div>\
-		</div>';
+				<div class="top-other-info"><span class="top-city"></span> | <span class="top-descr"></span></div>\
+			</div>';
 
-	this.widget.appendChild(this.mainScreen);
+		this.widget.appendChild(this.mainScreen);
 
-	this.mainScreenFooter = document.createElement('div');
-	this.mainScreenFooter.className = 'bottom-main';
-	this.mainScreenFooter.innerHTML = '\
-	<a class="more-info" target="_blank">Подробнее<span><i class="fa fa-angle-right fa-lg my-top-angle-right"></i></span></a>\
-			<div class="extended-data">\
-				<div class="extended-day">\
-					<div class="extended-icon"></div>\
-					<div class="extended-wrapper">\
-						<div class="extended-info">\
-							<div class="extended-weekday"></div>\
-							<div class="extended-descr"></div>\
+		this.mainScreenFooter = document.createElement('div');
+		this.mainScreenFooter.className = 'bottom-main';
+		this.mainScreenFooter.innerHTML = '\
+		<a class="more-info" target="_blank">Подробнее<span><i class="fa fa-angle-right fa-lg my-top-angle-right"></i></span></a>\
+				<div class="extended-data">\
+					<div class="extended-day">\
+						<div class="extended-icon"></div>\
+						<div class="extended-wrapper">\
+							<div class="extended-info">\
+								<div class="extended-weekday"></div>\
+								<div class="extended-descr"></div>\
+							</div>\
+							<div class="extended-temp"><span class="extended-max"></span>° / <span class="extended-min"></span>°</div>\
 						</div>\
-						<div class="extended-temp"><span class="extended-max"></span>° / <span class="extended-min"></span>°</div>\
 					</div>\
 				</div>\
-			</div>\
-			<div class="divider divider-extended"></div>\
-			<div class="extended-data">\
-				<div class="extended-day">\
-					<div class="extended-icon"></div>\
-					<div class="extended-wrapper">\
-						<div class="extended-info">\
-							<div class="extended-weekday"></div>\
-							<div class="extended-descr"></div>\
+				<div class="divider divider-extended"></div>\
+				<div class="extended-data">\
+					<div class="extended-day">\
+						<div class="extended-icon"></div>\
+						<div class="extended-wrapper">\
+							<div class="extended-info">\
+								<div class="extended-weekday"></div>\
+								<div class="extended-descr"></div>\
+							</div>\
+							<div class="extended-temp"><span class="extended-max"></span>° / <span class="extended-min"></span>°</div>\
 						</div>\
-						<div class="extended-temp"><span class="extended-max"></span>° / <span class="extended-min"></span>°</div>\
 					</div>\
 				</div>\
-			</div>\
-			<div class="divider divider-extended"></div>\
-			<div class="extended-data">\
-				<div class="extended-day">\
-					<div class="extended-icon"></div>\
-					<div class="extended-wrapper">\
-						<div class="extended-info">\
-							<div class="extended-weekday"></div>\
-							<div class="extended-descr"></div>\
+				<div class="divider divider-extended"></div>\
+				<div class="extended-data">\
+					<div class="extended-day">\
+						<div class="extended-icon"></div>\
+						<div class="extended-wrapper">\
+							<div class="extended-info">\
+								<div class="extended-weekday"></div>\
+								<div class="extended-descr"></div>\
+							</div>\
+							<div class="extended-temp"><span class="extended-max"></span>° / <span class="extended-min"></span>°</div>\
 						</div>\
-						<div class="extended-temp"><span class="extended-max"></span>° / <span class="extended-min"></span>°</div>\
 					</div>\
 				</div>\
-			</div>\
-			<div class="divider"></div>\
-			<div class="bottom-link"><a href="#" class="bottom-link-style">Прогноз на 5 дней</a></div>';
+				<div class="divider"></div>\
+				<div class="bottom-link"><a href="#" class="bottom-link-style">Прогноз на 5 дней</a></div>';
 
-	this.widget.appendChild(this.mainScreenFooter);
+		this.widget.appendChild(this.mainScreenFooter);
+
+		this.setMainPageInnerHTML();
+
+		document.querySelector('.top-dropdown').addEventListener('click', this.showDropdownList.bind(this));
+
+	}
 
 
 
-	this.showDropdownList = function () {
+	showDropdownList() {
 		var wrapper = document.createElement('div');
 		wrapper.className = 'widget-wrapper-cover';
 		this.widget.appendChild(wrapper);
@@ -103,20 +112,21 @@ var MainScreen = function (coords) {
 		document.querySelector('.js-change-location').href = '#change-location';
 		document.querySelector('.js-share').addEventListener('click', this.showShareScreen.bind(this));
 		document.querySelector('.js-settings').href =  '#settings=' + window.location.hash.split('=').pop();
-	};
+
+	}
 
 
 
-	this.closeDropdownList = function() {
+	closeDropdownList() {
 
 		this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
 		this.widget.removeChild(document.querySelector('.dropdown-list'));
 
-	};
+	}
 
 
 
-	this.getMainPageWeatherData = function() {
+	getMainPageWeatherData() {
 
 		var coords = this.coords;
 		if(!coords) return;
@@ -149,16 +159,17 @@ var MainScreen = function (coords) {
 					this.coordsToString = elem['coords'];
 					this.cityName = elem['city'];
 				}
-			});
+			}.bind(this));
 			localStorage.setItem('cities', JSON.stringify(lsArray));
 
 
 		}.bind(this));
-	};
+
+	}
 
 
 
-	this.setMainPageInnerHTML = function() {
+	setMainPageInnerHTML() {
 
 		if (window.location.hash == '') {
 			ymaps.ready(function() {
@@ -193,11 +204,12 @@ var MainScreen = function (coords) {
 				document.querySelector('.more-info').href = 'https://darksky.net/forecast/' + coordsToString + '/si24/en';
 				this.getMainPageWeatherData(coordsToString);
 		}
-	};
+
+	}
 
 
 
-	this.showShareScreen = function() {
+	showShareScreen() {
 
 		this.closeDropdownList();
 
@@ -234,22 +246,18 @@ var MainScreen = function (coords) {
 		}
 		
 		document.getElementsByClassName('share-cancel-btn')[0].addEventListener('click', this.hideShareScreen.bind(this));
-	};
+		
+	}
 
 
 	
-	this.hideShareScreen = function() {
+	hideShareScreen() {
 
 		this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
 		this.widget.removeChild(document.querySelector('.share-block'));
 		
-	};
-
-
-
-	this.setMainPageInnerHTML();
-
-	document.querySelector('.top-dropdown').addEventListener('click', this.showDropdownList.bind(this));
+	}
+	
 }
 
 
