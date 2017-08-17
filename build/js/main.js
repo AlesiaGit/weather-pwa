@@ -796,6 +796,8 @@ window.onload = function () {
 	location.hash = '';
 };
 
+screen.orientation.lock('portrait');
+
 var mainScreenCity;
 var myMap;
 var coords;
