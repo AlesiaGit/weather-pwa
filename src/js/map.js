@@ -1,26 +1,34 @@
-var Map = function() {
+class Map {
 
-	this.cityName = '';
-	this.coordsToString = '';
-	this.mapScreen = document.createElement('div');
-	this.mapScreen.className = 'location-wrapper-cover';
-	this.mapScreen.innerHTML = '\
-	<div class="location-map-wrapper">\
-		<div class="location-map" id="YMapsID">\
-			<div class="location-search-wrapper">\
-				<input class="location-search" placeholder="Введите название города..." autofocus>\
-				<a class="location-search-btn"><i class="fa fa-search fa-lg"></i></a>\
-				<a href="#change-location" class="location-confirm-btn"><i class="fa fa-check fa-lg"></i></a>\
+	constructor() {
+
+		this.cityName = '';
+		this.coordsToString = '';
+		this.mapScreen = document.createElement('div');
+		this.mapScreen.className = 'location-wrapper-cover';
+		this.mapScreen.innerHTML = '\
+		<div class="location-map-wrapper">\
+			<div class="location-map" id="YMapsID">\
+				<div class="location-search-wrapper">\
+					<input class="location-search" placeholder="Введите название города..." autofocus>\
+					<a class="location-search-btn"><i class="fa fa-search fa-lg"></i></a>\
+					<a href="#change-location" class="location-confirm-btn"><i class="fa fa-check fa-lg"></i></a>\
+				</div>\
 			</div>\
-		</div>\
-	</div>';
-	
-	document.getElementsByClassName('widget')[0].appendChild(this.mapScreen);
-	document.getElementById('YMapsID').style.height = window.screen.height/2 + 'px';
+		</div>';
+		
+		document.getElementsByClassName('widget')[0].appendChild(this.mapScreen);
+		document.getElementById('YMapsID').style.height = window.screen.height/2 + 'px';
+
+		ymaps.ready(this.initMap.bind(this));
+		document.querySelector('.location-search-btn').addEventListener('click', this.searchCityByName.bind(this));
+		document.querySelector('.location-confirm-btn').addEventListener('click', this.addNewCityToList.bind(this));
+
+	}
 
 
 
-	this.initMap = function() {
+	initMap () {
 
 		var geolocation = ymaps.geolocation;
 		coords = [ymaps.geolocation.latitude, ymaps.geolocation.longitude];
@@ -44,23 +52,25 @@ var Map = function() {
 				this.getNewCityDetails();
 			}
 		}.bind(this));
-	};
+
+	}
 
 
 
-	this.stringCoordsToArray = function(string) {
+	stringCoordsToArray(string) {
 
 		var arr = string.split(' ');
 		var reverseArr = arr.reverse();
 		arrayFromString = reverseArr.map(function(element) {
 			return Number(element);
 		});
-		return arrayFromString;		
-	};
+		return arrayFromString;	
+
+	}
 
 
-
-	this.getNewCityDetails = function() {
+	
+	getNewCityDetails() {
 
 		var center = myMap.getCenter();
 		var newCenter = [center[0].toFixed(6), center[1].toFixed(6)];
@@ -72,11 +82,13 @@ var Map = function() {
 			this.cityName = data.response.GeoObjectCollection.featureMember["0"].GeoObject.name;
 			document.getElementsByClassName('location-search')[0].placeholder = this.cityName;
 		}.bind(this));
-	};
+
+	}
 
 
 
-	this.searchCityByName = function() {
+	searchCityByName() {
+
 		var name = document.getElementsByClassName('location-search')[0].value;
 		if (name == '') {
 			return;
@@ -90,22 +102,19 @@ var Map = function() {
 			this.getNewCityDetails();
 			document.getElementsByClassName('location-search')[0].value = '';
 		}.bind(this));
-	};
+
+	}
 
 
 
-	this.addNewCityToList = function() {
+	addNewCityToList() {
+
 		if (document.getElementsByClassName('location-search')[0].placeholder != document.getElementsByClassName('current-city')[0].innerHTML) {
 			eventBus.trigger('add-city', {cityName: this.cityName, coordsToString: this.coordsToString});
 		} else {
 			document.getElementsByClassName('widget')[0].removeChild(document.getElementsByClassName('location-wrapper-cover')[0]);
 		}
-	};
-
-
-
-	ymaps.ready(this.initMap.bind(this));
-	document.querySelector('.location-search-btn').addEventListener('click', this.searchCityByName.bind(this));
-	document.querySelector('.location-confirm-btn').addEventListener('click', this.addNewCityToList.bind(this));
+		
+	}
 
 }

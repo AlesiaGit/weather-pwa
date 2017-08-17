@@ -1,56 +1,65 @@
-var Settings = function(backHash) {
+class Settings {
 
-	document.body.innerHTML = '';
- 	this.widget = document.createElement('div');
- 	this.widget.className = 'widget';
- 	document.body.appendChild(this.widget);
+	constructor(backHash) {
 
-	this.settingsScreen = document.createElement('div');
-	this.settingsScreen.className = 'widget-settings-wrapper';
-	
-	this.settingsScreen.innerHTML = '\
-	<div class="settings-header">\
-		<a href="#" class="settings-title js-settings-title"><i class="fa fa-angle-left fa-lg my-settings-angle-left"></i></span>Настройки<span></a>\
-		<div class="settings-divider settings-header-divider"></div>\
-	</div>\
-	<div class="settings-block">\
-		<div class="settings-block-title">Оповещения погоды</div>\
-		<div class="settings-divider settings-block-divider"></div>\
-		<div class="settings-block-body">\
-			<div class="settings-block-body-text"></div>\
-			<div class="settings-block-body-icon"></div>\
+		document.body.innerHTML = '';
+	 	this.widget = document.createElement('div');
+	 	this.widget.className = 'widget';
+	 	document.body.appendChild(this.widget);
+
+		this.settingsScreen = document.createElement('div');
+		this.settingsScreen.className = 'widget-settings-wrapper';
+		
+		this.settingsScreen.innerHTML = '\
+		<div class="settings-header">\
+			<a href="#" class="settings-title js-settings-title"><i class="fa fa-angle-left fa-lg my-settings-angle-left"></i></span>Настройки<span></a>\
+			<div class="settings-divider settings-header-divider"></div>\
 		</div>\
-	</div>\
-	<div class="settings-block">\
-		<div class="settings-block-title">Единица измерения</div>\
-		<div class="settings-divider settings-block-divider"></div>\
-		<a class="settings-block-body js-temp">\
-			<div class="settings-block-body-text">Единицы температуры</div>\
-			<div class="settings-block-body-icon"><span class="js-temp-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
-		</a>\
-		<a class="settings-block-body js-wind">\
-			<div class="settings-block-body-text">Скорость ветра</div>\
-			<div class="settings-block-body-icon"><span class="js-wind-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
-		</a>\
-	</div>';
+		<div class="settings-block">\
+			<div class="settings-block-title">Оповещения погоды</div>\
+			<div class="settings-divider settings-block-divider"></div>\
+			<div class="settings-block-body">\
+				<div class="settings-block-body-text"></div>\
+				<div class="settings-block-body-icon"></div>\
+			</div>\
+		</div>\
+		<div class="settings-block">\
+			<div class="settings-block-title">Единица измерения</div>\
+			<div class="settings-divider settings-block-divider"></div>\
+			<a class="settings-block-body js-temp">\
+				<div class="settings-block-body-text">Единицы температуры</div>\
+				<div class="settings-block-body-icon"><span class="js-temp-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
+			</a>\
+			<a class="settings-block-body js-wind">\
+				<div class="settings-block-body-text">Скорость ветра</div>\
+				<div class="settings-block-body-icon"><span class="js-wind-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
+			</a>\
+		</div>';
 
-	this.widget.appendChild(this.settingsScreen);
+		this.widget.appendChild(this.settingsScreen);
 
-	this.settingsScreen.getElementsByClassName('js-temp-unit')[0].innerHTML = localStorage.getItem('temp-unit') || 'C°';
-	this.settingsScreen.getElementsByClassName('js-wind-unit')[0].innerHTML = localStorage.getItem('wind-unit') || 'км/ч';
+		this.settingsScreen.getElementsByClassName('js-temp-unit')[0].innerHTML = localStorage.getItem('temp-unit') || 'C°';
+		this.settingsScreen.getElementsByClassName('js-wind-unit')[0].innerHTML = localStorage.getItem('wind-unit') || 'км/ч';
 
 
-	var self = this;
+		var self = this;
 
-	ymaps.ready(function() {
-		self.settingsScreen.getElementsByClassName('settings-block-body-text')[0].innerHTML = ymaps.geolocation.city;
-		self.settingsScreen.getElementsByClassName('js-settings-title').href = '#' + ymaps.geolocation.latitude + ',' + ymaps.geolocation.longitude;
-	});
+		ymaps.ready(function() {
+			self.settingsScreen.getElementsByClassName('settings-block-body-text')[0].innerHTML = ymaps.geolocation.city;
+			self.settingsScreen.getElementsByClassName('js-settings-title').href = '#' + ymaps.geolocation.latitude + ',' + ymaps.geolocation.longitude;
+		});
+
+		this.settingsScreen.getElementsByClassName('js-wind')[0].addEventListener('click', this.showWindOptionsScreen.bind(this));
+		this.settingsScreen.getElementsByClassName('js-temp')[0].addEventListener('click', this.showTempOptionsScreen.bind(this));
+		this.settingsScreen.getElementsByClassName('js-settings-title')[0].href = '#today=' + backHash;
+
+	}
 
 	
 
 
-	this.showWindOptionsScreen = function() {
+	showWindOptionsScreen() {
+
 		var wrapper = document.createElement('div');
 		wrapper.className = 'widget-wrapper-cover';
 		this.widget.appendChild(wrapper);
@@ -77,11 +86,12 @@ var Settings = function(backHash) {
 
 		optionsBlock.addEventListener('click', this.selectWindOption.bind(this));
 
-	};
+	}
 
 
 
-	this.selectWindOption = function(event) {
+	selectWindOption(event) {
+
 		var target = event.target;
 
 		while (target !== document.getElementsByClassName('options-block')[0]) {
@@ -95,11 +105,12 @@ var Settings = function(backHash) {
 			}
 			target = target.parentNode;
 		}					
-	};
+	}
 
 
 
-	this.showTempOptionsScreen = function() {
+	showTempOptionsScreen() {
+
 		var wrapper = document.createElement('div');
 		wrapper.className = 'widget-wrapper-cover';
 		this.widget.appendChild(wrapper);
@@ -126,11 +137,12 @@ var Settings = function(backHash) {
 
 		optionsBlock.addEventListener('click', this.selectTempOption.bind(this));
 
-	};
+	}
 
 
 
-	this.selectTempOption = function(event) {
+	selectTempOption(event) {
+
 		var target = event.target;
 
 		while (target !== document.getElementsByClassName('options-block')[0]) {
@@ -144,12 +156,7 @@ var Settings = function(backHash) {
 			}
 			target = target.parentNode;
 		}					
-	};
-
-
-	this.settingsScreen.getElementsByClassName('js-wind')[0].addEventListener('click', this.showWindOptionsScreen.bind(this));
-	this.settingsScreen.getElementsByClassName('js-temp')[0].addEventListener('click', this.showTempOptionsScreen.bind(this));
-	this.settingsScreen.getElementsByClassName('js-settings-title')[0].href = '#today=' + backHash;
+	}
 
 }
 
