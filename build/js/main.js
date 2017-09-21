@@ -824,9 +824,9 @@ Router.prototype = {
 	}
 };
 
-window.onload = function () {
+/*window.onload = function() {
 	location.hash = '';
-};
+}*/
 
 screen.orientation.lock('portrait');
 

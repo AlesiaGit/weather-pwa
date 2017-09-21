@@ -2,19 +2,19 @@
     "dir": "ltr",
     "lang": "en",
     "name": "Weather widget PWA",
-    "scope": "weather-pwa/build/",
+    "scope": "weather-pwa/build/index.html",
     "display": "standalone",
     "start_url": "https://alesiagit.github.io/weather-pwa/build/index.html",
     "short_name": "Weather",
     "theme_color": "transparent",
     "description": "",
-    "orientation": "landscape",
+    "orientation": "portrait",
     "background_color": "transparent",
     "related_applications": [],
     "prefer_related_applications": false,
     "icons": [
         {
-            "src": "img/pwa/weather-pwa/build/img/favicon.ico",
+            "src": "img/pwa/favicon.ico",
             "sizes": "16x16"
         },
         {
