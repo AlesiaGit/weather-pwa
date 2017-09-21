@@ -1,30 +1,43 @@
-var CitiesList = function () {
+class CitiesList {
 
-	document.body.innerHTML = '';
-	this.widget = document.createElement('div');
-	this.widget.className = 'widget';
-	document.body.appendChild(this.widget);
+	constructor() {
 
-	this.locationScreen = document.createElement('div');
-	this.locationScreen.className = 'widget-wrapper-location';
-	this.locationScreen.innerHTML = '\
-	<div class="location-header">\
-		<button class="location-change-btn">Изменить</button>\
-		<button class="location-cancel-change-btn">Отменить</button>\
-		<div class="location-header-divider"></div>\
-	</div>\
-	<div class="location-block"></div>';
-	this.widget.appendChild(this.locationScreen);
+		document.body.innerHTML = '';
+		this.widget = document.createElement('div');
+		this.widget.className = 'widget';
+		document.body.appendChild(this.widget);
 
-	this.locationScreenBottom = document.createElement('div');
-	this.locationScreenBottom.className = 'bottom-location';
-	this.locationScreenBottom.innerHTML = '\
-	<a href="#map" class="location-add-btn"></a>\
-	<a class="location-delete-btn"></a>\
-	<div class="add-del-btn-descr">Добавить</div>';
-	this.widget.appendChild(this.locationScreenBottom);
+		this.locationScreen = document.createElement('div');
+		this.locationScreen.className = 'widget-wrapper-location';
+		this.locationScreen.innerHTML = '\
+		<div class="location-header">\
+			<button class="location-change-btn">Изменить</button>\
+			<button class="location-cancel-change-btn">Отменить</button>\
+			<div class="location-header-divider"></div>\
+		</div>\
+		<div class="location-block"></div>';
+		this.widget.appendChild(this.locationScreen);
 
-	this.buildDomFromLocalStorage = function () {
+		this.locationScreenBottom = document.createElement('div');
+		this.locationScreenBottom.className = 'bottom-location';
+		this.locationScreenBottom.innerHTML = '\
+		<a href="#map" class="location-add-btn"></a>\
+		<a class="location-delete-btn"></a>\
+		<div class="add-del-btn-descr">Добавить</div>';
+		this.widget.appendChild(this.locationScreenBottom);
+
+		this.buildDomFromLocalStorage();
+
+		document.querySelector('.location-change-btn').addEventListener('click', this.changeCityList);
+
+		document.querySelector('.location-delete-btn').addEventListener('click', this.deleteCityFromList);
+
+		document.querySelector('.location-cancel-change-btn').addEventListener('click', this.cancelChangeCityList);
+
+		eventBus.on('add-city', this.addNewCityToList.bind(this));
+	}
+
+	buildDomFromLocalStorage() {
 
 		ymaps.ready(function () {
 
@@ -63,9 +76,9 @@ var CitiesList = function () {
 				}
 			});
 		});
-	};
+	}
 
-	this.changeCityList = function () {
+	changeCityList() {
 
 		var checkboxArray = document.getElementsByClassName('location-city-del');
 		for (var i = 0; i < checkboxArray.length; i++) {
@@ -79,27 +92,39 @@ var CitiesList = function () {
 		document.getElementsByClassName('add-del-btn-descr')[0].innerHTML = 'Удалить';
 		document.getElementsByClassName('location-change-btn')[0].style.display = 'none';
 		document.getElementsByClassName('location-cancel-change-btn')[0].style.display = 'block';
-	};
+	}
 
-	this.deleteCityFromList = function () {
+	deleteCityFromList() {
 
 		var checkboxArray = document.getElementsByClassName('location-city-del');
 
-		for (var i = 0; i < checkboxArray.length; i++) {
-			if (checkboxArray[i].checked) {
+		var elementsToDelete = Array.prototype.filter.call(checkboxArray, function (elem) {
+			return elem.checked;
+		});
+		var namesToDelete = elementsToDelete.map(function (elem) {
+			return elem.parentNode.getElementsByClassName('location-city')[0].innerHTML;
+		});
 
-				lsArray = JSON.parse(localStorage.getItem('cities')) || [];
-				lsArray.forEach(function (elem) {
-					if (elem['city'] == checkboxArray[i].parentNode.getElementsByClassName('location-city')[0].innerHTML) {
-						lsArray.splice(lsArray.indexOf(elem), 1);
-						localStorage.setItem('cities', JSON.stringify(lsArray));
-					}
-				});
-				checkboxArray[i].parentNode.parentNode.parentNode.removeChild(checkboxArray[i].parentNode.parentNode);
-				checkboxArray.length -= 1;
-				i -= 1;
-			}
-		}
+		lsArray = JSON.parse(localStorage.getItem('cities')) || [];
+		lsArray = lsArray.filter(function (elem) {
+			return namesToDelete.indexOf(elem['city']) < 0;
+		});
+
+		/*namesToDelete.forEach(function(cityName) {
+  	var existing = lsArray.find(function(p) {
+  		return	p['city'] === cityName;
+  	});
+  			var i = lsArray.indexOf(existing);
+  	if (i >= 0) {
+  		lsArray.splice(i, 1);
+  	}
+  });*/
+
+		localStorage.setItem('cities', JSON.stringify(lsArray));
+
+		elementsToDelete.forEach(function (elem) {
+			elem.parentNode.parentNode.parentNode.removeChild(elem.parentNode.parentNode);
+		});
 
 		for (var i = 0; i < checkboxArray.length; i++) {
 			checkboxArray[i].checked = false;
@@ -111,9 +136,9 @@ var CitiesList = function () {
 		document.getElementsByClassName('add-del-btn-descr')[0].innerHTML = 'Добавить';
 		document.getElementsByClassName('location-change-btn')[0].style.display = 'block';
 		document.getElementsByClassName('location-cancel-change-btn')[0].style.display = 'none';
-	};
+	}
 
-	this.cancelChangeCityList = function () {
+	cancelChangeCityList() {
 
 		var checkboxArray = document.getElementsByClassName('location-city-del');
 		for (var i = 0; i < checkboxArray.length; i++) {
@@ -126,13 +151,13 @@ var CitiesList = function () {
 		document.getElementsByClassName('add-del-btn-descr')[0].innerHTML = 'Добавить';
 		document.getElementsByClassName('location-change-btn')[0].style.display = 'block';
 		document.getElementsByClassName('location-cancel-change-btn')[0].style.display = 'none';
-	};
+	}
 
-	this.addNewCityToList = function (data) {
+	addNewCityToList(data) {
 
 		var array = document.getElementsByClassName('location-city');
 
-		for (key in array) {
+		for (var key in array) {
 			if (array[key].innerHTML == data.cityName) {
 				return;
 			}
@@ -158,18 +183,9 @@ var CitiesList = function () {
 		cities['data'] = '';
 		lsArray.push(cities);
 		localStorage.setItem('cities', JSON.stringify(lsArray));
-	};
+	}
 
-	this.buildDomFromLocalStorage();
-
-	document.querySelector('.location-change-btn').addEventListener('click', this.changeCityList);
-
-	document.querySelector('.location-delete-btn').addEventListener('click', this.deleteCityFromList);
-
-	document.querySelector('.location-cancel-change-btn').addEventListener('click', this.cancelChangeCityList);
-
-	eventBus.on('add-city', this.addNewCityToList.bind(this));
-};
+}
 function EventBus() {
 	this.listeners = {};
 };
@@ -208,288 +224,301 @@ EventBus.prototype = {
 	}
 };
 
-var Extended = function (backHash) {
+class Extended {
 
-	document.body.innerHTML = '';
-	this.widget = document.createElement('div');
-	this.widget.className = 'widget';
-	document.body.appendChild(this.widget);
+	constructor(backHash) {
 
-	this.extendedWrapper = document.createElement('div');
-	this.extendedWrapper.className = 'widget-extended-wrapper';
+		this.backHash = backHash;
 
-	this.extendedWrapper.innerHTML = '<div class="extended-header">\
-			<div class="extended-title">Прогноз на 5 дней</div>\
-			<div class="extended-dates"><span class="start-date">28.07</span>-<span class="end-date">01.08</span></div>\
-		</div>\
-		<table class="table">\
-			<thead class="thead">\
-				<tr class="extended-table-date">\
-					<th class="th">\
-						<div class="th-weekday"></div>\
-						<div class="th-date"></div>\
-					</th>\
-					<th class="th">\
-						<div class="th-weekday"></div>\
-						<div class="th-date"></div>\
-					</th>\
-					<th class="th">\
-						<div class="th-weekday"></div>\
-						<div class="th-date"></div>\
-					</th>\
-					<th class="th">\
-						<div class="th-weekday"></div>\
-						<div class="th-date"></div>\
-					</th>\
-					<th class="th">\
-						<div class="th-weekday"></div>\
-						<div class="th-date"></div>\
-					</th>\
-				</tr>\
-			</thead>\
-			<tbody class="tbody">\
-				<tr>\
-					<td class="td-icon"></td>\
-					<td class="td-icon"></td>\
-					<td class="td-icon"></td>\
-					<td class="td-icon"></td>\
-					<td class="td-icon"></td>\
-				</tr>\
-				<tr>\
-					<td class="td-descr"></td>\
-					<td class="td-descr"></td>\
-					<td class="td-descr"></td>\
-					<td class="td-descr"></td>\
-					<td class="td-descr"></td>\
-				</tr>\
-				<tr>\
-					<td colspan="5" class="td-chart"><div class="chart-wrapper"><canvas id="myChart" height="250" width="600"></canvas></div></td>\
-				</tr>\
-				<tr>\
-					<td class="td-wind-direction"></td>\
-					<td class="td-wind-direction"></td>\
-					<td class="td-wind-direction"></td>\
-					<td class="td-wind-direction"></td>\
-					<td class="td-wind-direction"></td>\
-				</tr>\
-				<tr>\
-					<td class="td-wind-speed js-wind-speed"></td>\
-					<td class="td-wind-speed js-wind-speed"></td>\
-					<td class="td-wind-speed js-wind-speed"></td>\
-					<td class="td-wind-speed js-wind-speed"></td>\
-					<td class="td-wind-speed js-wind-speed"></td>\
-				</tr>\
-			</tbody>\
-		</table>';
+		document.body.innerHTML = '';
+		this.widget = document.createElement('div');
+		this.widget.className = 'widget';
+		document.body.appendChild(this.widget);
 
-	this.widget.appendChild(this.extendedWrapper);
+		this.extendedWrapper = document.createElement('div');
+		this.extendedWrapper.className = 'widget-extended-wrapper';
 
-	this.ctx = document.getElementById("myChart");
-	Chart.defaults.global.defaultFontFamily = 'Mi Lanting';
-	Chart.defaults.global.defaultFontSize = 14;
-	Chart.defaults.global.defaultFontColor = 'rgba(0,0,0,1)';
-	this.ctx.style.width = window.innerWidth * window.devicePixelRatio;
-	var dataLabels = [];
-	dataLabels.length = 5;
+		this.extendedWrapper.innerHTML = '<div class="extended-header">\
+				<div class="extended-title">Прогноз на 5 дней</div>\
+				<div class="extended-dates"><span class="start-date">28.07</span>-<span class="end-date">01.08</span></div>\
+			</div>\
+			<table class="table">\
+				<thead class="thead">\
+					<tr class="extended-table-date">\
+						<th class="th">\
+							<div class="th-weekday"></div>\
+							<div class="th-date"></div>\
+						</th>\
+						<th class="th">\
+							<div class="th-weekday"></div>\
+							<div class="th-date"></div>\
+						</th>\
+						<th class="th">\
+							<div class="th-weekday"></div>\
+							<div class="th-date"></div>\
+						</th>\
+						<th class="th">\
+							<div class="th-weekday"></div>\
+							<div class="th-date"></div>\
+						</th>\
+						<th class="th">\
+							<div class="th-weekday"></div>\
+							<div class="th-date"></div>\
+						</th>\
+					</tr>\
+				</thead>\
+				<tbody class="tbody">\
+					<tr>\
+						<td class="td-icon"></td>\
+						<td class="td-icon"></td>\
+						<td class="td-icon"></td>\
+						<td class="td-icon"></td>\
+						<td class="td-icon"></td>\
+					</tr>\
+					<tr>\
+						<td class="td-descr"></td>\
+						<td class="td-descr"></td>\
+						<td class="td-descr"></td>\
+						<td class="td-descr"></td>\
+						<td class="td-descr"></td>\
+					</tr>\
+					<tr>\
+						<td colspan="5" class="td-chart"><div class="chart-wrapper"><canvas id="myChart" height="250" width="600"></canvas></div></td>\
+					</tr>\
+					<tr>\
+						<td class="td-wind-direction"></td>\
+						<td class="td-wind-direction"></td>\
+						<td class="td-wind-direction"></td>\
+						<td class="td-wind-direction"></td>\
+						<td class="td-wind-direction"></td>\
+					</tr>\
+					<tr>\
+						<td class="td-wind-speed js-wind-speed"></td>\
+						<td class="td-wind-speed js-wind-speed"></td>\
+						<td class="td-wind-speed js-wind-speed"></td>\
+						<td class="td-wind-speed js-wind-speed"></td>\
+						<td class="td-wind-speed js-wind-speed"></td>\
+					</tr>\
+				</tbody>\
+			</table>';
 
-	var myChart = new Chart(this.ctx, {
-		type: 'line',
-		data: {
-			labels: dataLabels,
-			datasets: [{
-				label: false,
-				data: chartDataMax,
-				lineTension: 0,
-				backgroundColor: 'rgba(0,0,0,0)',
-				borderColor: 'rgba(0,0,0,0.5)',
-				borderWidth: 1,
-				pointBackgroundColor: 'rgba(255,255,255,1)',
-				pointBorderWidth: 1
+		this.widget.appendChild(this.extendedWrapper);
 
-			}, {
-				label: false,
-				data: chartDataMin,
-				lineTension: 0,
-				backgroundColor: 'rgba(0,0,0,0)',
-				borderColor: 'rgba(0,0,0,0.5)',
-				borderWidth: 1,
-				pointBackgroundColor: 'rgba(255,255,255,1)',
-				pointBorderWidth: 1
+		this.ctx = document.getElementById("myChart");
+		Chart.defaults.global.defaultFontFamily = 'Mi Lanting';
+		Chart.defaults.global.defaultFontSize = 14;
+		Chart.defaults.global.defaultFontColor = 'rgba(0,0,0,1)';
+		this.ctx.style.width = window.innerWidth * window.devicePixelRatio;
+		var dataLabels = [];
+		dataLabels.length = 5;
 
-			}]
-		},
-		options: {
-			scales: {
-				xAxes: [{
-					display: false,
-					ticks: {
-						beginAtZero: true
-					}
-				}],
-				yAxes: [{
-					display: false,
-					ticks: {
-						beginAtZero: false
-					}
-				}],
-				gridLines: [{
+		var myChart = new Chart(this.ctx, {
+			type: 'line',
+			data: {
+				labels: dataLabels,
+				datasets: [{
+					label: false,
+					data: chartDataMax,
+					lineTension: 0,
+					backgroundColor: 'rgba(0,0,0,0)',
+					borderColor: 'rgba(0,0,0,0.5)',
+					borderWidth: 1,
+					pointBackgroundColor: 'rgba(255,255,255,1)',
+					pointBorderWidth: 1
+
+				}, {
+					label: false,
+					data: chartDataMin,
+					lineTension: 0,
+					backgroundColor: 'rgba(0,0,0,0)',
+					borderColor: 'rgba(0,0,0,0.5)',
+					borderWidth: 1,
+					pointBackgroundColor: 'rgba(255,255,255,1)',
+					pointBorderWidth: 1
+
+				}]
+			},
+			options: {
+				scales: {
+					xAxes: [{
+						display: false,
+						ticks: {
+							beginAtZero: true
+						}
+					}],
+					yAxes: [{
+						display: false,
+						ticks: {
+							beginAtZero: false
+						}
+					}],
+					gridLines: [{
+						display: false
+					}],
+					startValue: 2
+				},
+				responsive: true,
+				legend: {
 					display: false
-				}],
-				startValue: 2
-			},
-			responsive: true,
-			legend: {
-				display: false
-			},
-			layout: {
-				padding: {
-					top: 30,
-					right: 15,
-					left: 15,
-					bottom: 30
-				}
-			},
-			animation: {
-				duration: 0,
-				easing: 'linear',
-				onComplete: function () {
-					var ctx = this.chart.ctx;
-					ctx.fillStyle = 'rgba(0,0,0,1)';
-					ctx.textAlign = 'center';
-					ctx.textBaseline = 'bottom';
+				},
+				layout: {
+					padding: {
+						top: 30,
+						right: 15,
+						left: 15,
+						bottom: 30
+					}
+				},
+				animation: {
+					duration: 0,
+					easing: 'linear',
+					onComplete: function () {
+						var ctx = this.chart.ctx;
+						ctx.fillStyle = 'rgba(0,0,0,1)';
+						ctx.textAlign = 'center';
+						ctx.textBaseline = 'bottom';
 
-					this.data.datasets.forEach(function (dataset) {
-						for (var i = 0; i < dataset.data.length; i++) {
-							for (var key in dataset._meta) {
+						this.data.datasets.forEach(function (dataset) {
+							for (var i = 0; i < dataset.data.length; i++) {
+								for (var key in dataset._meta) {
 
-								var model = dataset._meta[key].data[i]._model;
-								if (dataset.data == chartDataMax) {
-									ctx.fillText(dataset.data[i], model.x, model.y - 7);
-								} else {
-									ctx.fillText(dataset.data[i], model.x, model.y + 27);
+									var model = dataset._meta[key].data[i]._model;
+									if (dataset.data == chartDataMax) {
+										ctx.fillText(dataset.data[i], model.x, model.y - 7);
+									} else {
+										ctx.fillText(dataset.data[i], model.x, model.y + 27);
+									}
 								}
 							}
-						}
-					});
+						});
+					}
 				}
 			}
-		}
-	});
+		});
 
-	this.extendedFooter = document.createElement('div');
-	this.extendedFooter.className = 'bottom-extended';
-	this.extendedFooter.innerHTML = '<a href="#" class="extended-close-btn"></a>';
-	this.widget.appendChild(this.extendedFooter);
+		this.extendedFooter = document.createElement('div');
+		this.extendedFooter.className = 'bottom-extended';
+		this.extendedFooter.innerHTML = '<a href="#" class="extended-close-btn"></a>';
+		this.widget.appendChild(this.extendedFooter);
 
-	this.closeExtendedBtn = document.getElementsByClassName('extended-close-btn')[0];
-	this.closeExtendedBtn.href = '#today=' + backHash;
+		this.closeExtendedBtn = document.getElementsByClassName('extended-close-btn')[0];
+		this.closeExtendedBtn.href = '#today=' + backHash;
 
-	lsArray = JSON.parse(localStorage.getItem('cities')) || [];
-	lsArray.forEach(function (elem) {
-		if (elem['coords'] == backHash) {
-			var data = elem['data'];
+		lsArray = JSON.parse(localStorage.getItem('cities')) || [];
+		lsArray.forEach(function (elem) {
+			if (elem['coords'] == backHash) {
+				var data = elem['data'];
 
-			document.getElementsByClassName('start-date')[0].innerHTML = toRegDate(data.daily.data[0].time);
-			document.getElementsByClassName('end-date')[0].innerHTML = toRegDate(data.daily.data[4].time);
+				document.getElementsByClassName('start-date')[0].innerHTML = toRegDate(data.daily.data[0].time);
+				document.getElementsByClassName('end-date')[0].innerHTML = toRegDate(data.daily.data[4].time);
 
-			var d = new Date();
-			var weekday = d.getDay();
-			var weekdaysArray = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
-			daysExtended = ["Сегодня", "Завтра", weekdaysArray[(weekday + 2) % 7], weekdaysArray[(weekday + 3) % 7], weekdaysArray[(weekday + 4) % 7]];
+				var d = new Date();
+				var weekday = d.getDay();
+				var weekdaysArray = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+				daysExtended = ["Сегодня", "Завтра", weekdaysArray[(weekday + 2) % 7], weekdaysArray[(weekday + 3) % 7], weekdaysArray[(weekday + 4) % 7]];
 
-			for (var i = 0; i < daysExtended.length; i++) {
-				var table = document.getElementsByClassName('table')[0];
-				table.rows[0].cells[i].children[0].innerHTML = daysExtended[i];
-				table.rows[0].cells[i].children[1].innerHTML = toRegDate(data.daily.data[i].time);
-				table.rows[1].cells[i].className = 'td-icon extended-' + data.daily.data[i].icon;
-				table.rows[2].cells[i].innerHTML = iconToDescr(data.daily.data[i].icon);
-				table.rows[4].cells[i].innerHTML = windBearing(data.daily.data[i].windBearing);
-				table.rows[5].cells[i].innerHTML = toKilometers(data.daily.data[i].windSpeed);
+				for (var i = 0; i < daysExtended.length; i++) {
+					var table = document.getElementsByClassName('table')[0];
+					table.rows[0].cells[i].children[0].innerHTML = daysExtended[i];
+					table.rows[0].cells[i].children[1].innerHTML = toRegDate(data.daily.data[i].time);
+					table.rows[1].cells[i].className = 'td-icon extended-' + data.daily.data[i].icon;
+					table.rows[2].cells[i].innerHTML = iconToDescr(data.daily.data[i].icon);
+					table.rows[4].cells[i].innerHTML = windBearing(data.daily.data[i].windBearing);
+					table.rows[5].cells[i].innerHTML = toKilometers(data.daily.data[i].windSpeed);
 
-				chartDataMax[i] = toCelcius(data.daily.data[i].apparentTemperatureMax);
-				chartDataMin[i] = toCelcius(data.daily.data[i].apparentTemperatureMin);
+					chartDataMax[i] = toCelcius(data.daily.data[i].apparentTemperatureMax);
+					chartDataMin[i] = toCelcius(data.daily.data[i].apparentTemperatureMin);
 
-				chartLabels[i] = daysExtended[i];
+					chartLabels[i] = daysExtended[i];
+				}
 			}
-		}
-	});
-};
+		});
+	}
+}
 
-var MainScreen = function (coords) {
+class MainScreen {
 
-	this.coords = coords;
-	this.cityName = '';
-	this.coordsToString = '';
+	constructor(coords) {
+		this.coords = coords;
 
-	document.body.innerHTML = '';
-	this.widget = document.createElement('div');
-	this.widget.className = 'widget';
-	document.body.appendChild(this.widget);
+		this.coords = coords;
+		this.cityName = '';
+		this.coordsToString = '';
 
-	this.mainScreen = document.createElement('div');
-	this.mainScreen.className = 'widget-wrapper';
-	this.mainScreen.innerHTML = '\
-	 	<div class="top-main">\
-			<div class="top-data">\
-				<div class="top-temp-wrapper">\
-					<div class="top-temp"></div>\
-					<div class="top-celcius">°</div>\
+		document.body.innerHTML = '';
+		this.widget = document.createElement('div');
+		this.widget.className = 'widget';
+		document.body.appendChild(this.widget);
+
+		this.mainScreen = document.createElement('div');
+		this.mainScreen.className = 'widget-wrapper';
+		this.mainScreen.innerHTML = '\
+		 	<div class="top-main">\
+				<div class="top-data">\
+					<div class="top-temp-wrapper">\
+						<div class="top-temp"></div>\
+						<div class="top-celcius">°</div>\
+					</div>\
+					<a class="top-dropdown"></a>\
 				</div>\
-				<a class="top-dropdown"></a>\
-			</div>\
-			<div class="top-other-info"><span class="top-city"></span> | <span class="top-descr"></span></div>\
-		</div>';
+				<div class="top-other-info"><span class="top-city"></span> | <span class="top-descr"></span></div>\
+			</div>';
 
-	this.widget.appendChild(this.mainScreen);
+		this.widget.appendChild(this.mainScreen);
 
-	this.mainScreenFooter = document.createElement('div');
-	this.mainScreenFooter.className = 'bottom-main';
-	this.mainScreenFooter.innerHTML = '\
-	<a class="more-info" target="_blank">Подробнее<span><i class="fa fa-angle-right fa-lg my-top-angle-right"></i></span></a>\
-			<div class="extended-data">\
-				<div class="extended-day">\
-					<div class="extended-icon"></div>\
-					<div class="extended-wrapper">\
-						<div class="extended-info">\
-							<div class="extended-weekday"></div>\
-							<div class="extended-descr"></div>\
+		this.mainScreenFooter = document.createElement('div');
+		this.mainScreenFooter.className = 'bottom-main';
+		this.mainScreenFooter.innerHTML = '\
+		<a class="more-info" target="_blank">Подробнее<span><i class="fa fa-angle-right fa-lg my-top-angle-right"></i></span></a>\
+				<div class="extended-data">\
+					<div class="extended-day">\
+						<div class="extended-icon"></div>\
+						<div class="extended-wrapper">\
+							<div class="extended-info">\
+								<div class="extended-weekday"></div>\
+								<div class="extended-descr"></div>\
+							</div>\
+							<div class="extended-temp"><span class="extended-max"></span>° / <span class="extended-min"></span>°</div>\
 						</div>\
-						<div class="extended-temp"><span class="extended-max"></span>° / <span class="extended-min"></span>°</div>\
 					</div>\
 				</div>\
-			</div>\
-			<div class="divider divider-extended"></div>\
-			<div class="extended-data">\
-				<div class="extended-day">\
-					<div class="extended-icon"></div>\
-					<div class="extended-wrapper">\
-						<div class="extended-info">\
-							<div class="extended-weekday"></div>\
-							<div class="extended-descr"></div>\
+				<div class="divider divider-extended"></div>\
+				<div class="extended-data">\
+					<div class="extended-day">\
+						<div class="extended-icon"></div>\
+						<div class="extended-wrapper">\
+							<div class="extended-info">\
+								<div class="extended-weekday"></div>\
+								<div class="extended-descr"></div>\
+							</div>\
+							<div class="extended-temp"><span class="extended-max"></span>° / <span class="extended-min"></span>°</div>\
 						</div>\
-						<div class="extended-temp"><span class="extended-max"></span>° / <span class="extended-min"></span>°</div>\
 					</div>\
 				</div>\
-			</div>\
-			<div class="divider divider-extended"></div>\
-			<div class="extended-data">\
-				<div class="extended-day">\
-					<div class="extended-icon"></div>\
-					<div class="extended-wrapper">\
-						<div class="extended-info">\
-							<div class="extended-weekday"></div>\
-							<div class="extended-descr"></div>\
+				<div class="divider divider-extended"></div>\
+				<div class="extended-data">\
+					<div class="extended-day">\
+						<div class="extended-icon"></div>\
+						<div class="extended-wrapper">\
+							<div class="extended-info">\
+								<div class="extended-weekday"></div>\
+								<div class="extended-descr"></div>\
+							</div>\
+							<div class="extended-temp"><span class="extended-max"></span>° / <span class="extended-min"></span>°</div>\
 						</div>\
-						<div class="extended-temp"><span class="extended-max"></span>° / <span class="extended-min"></span>°</div>\
 					</div>\
 				</div>\
-			</div>\
-			<div class="divider"></div>\
-			<div class="bottom-link"><a href="#" class="bottom-link-style">Прогноз на 5 дней</a></div>';
+				<div class="divider"></div>\
+				<div class="bottom-link"><a href="#" class="bottom-link-style">Прогноз на 5 дней</a></div>';
 
-	this.widget.appendChild(this.mainScreenFooter);
+		this.widget.appendChild(this.mainScreenFooter);
 
-	this.showDropdownList = function () {
+		this.setMainPageInnerHTML();
+
+		document.querySelector('.top-dropdown').addEventListener('click', this.showDropdownList.bind(this));
+	}
+
+	showDropdownList() {
 		var wrapper = document.createElement('div');
 		wrapper.className = 'widget-wrapper-cover';
 		this.widget.appendChild(wrapper);
@@ -517,15 +546,15 @@ var MainScreen = function (coords) {
 		document.querySelector('.js-change-location').href = '#change-location';
 		document.querySelector('.js-share').addEventListener('click', this.showShareScreen.bind(this));
 		document.querySelector('.js-settings').href = '#settings=' + window.location.hash.split('=').pop();
-	};
+	}
 
-	this.closeDropdownList = function () {
+	closeDropdownList() {
 
 		this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
 		this.widget.removeChild(document.querySelector('.dropdown-list'));
-	};
+	}
 
-	this.getMainPageWeatherData = function () {
+	getMainPageWeatherData() {
 
 		var coords = this.coords;
 		if (!coords) return;
@@ -558,12 +587,12 @@ var MainScreen = function (coords) {
 					this.coordsToString = elem['coords'];
 					this.cityName = elem['city'];
 				}
-			});
+			}.bind(this));
 			localStorage.setItem('cities', JSON.stringify(lsArray));
 		}.bind(this));
-	};
+	}
 
-	this.setMainPageInnerHTML = function () {
+	setMainPageInnerHTML() {
 
 		if (window.location.hash == '') {
 			ymaps.ready(function () {
@@ -597,9 +626,9 @@ var MainScreen = function (coords) {
 			document.querySelector('.more-info').href = 'https://darksky.net/forecast/' + coordsToString + '/si24/en';
 			this.getMainPageWeatherData(coordsToString);
 		}
-	};
+	}
 
-	this.showShareScreen = function () {
+	showShareScreen() {
 
 		this.closeDropdownList();
 
@@ -634,40 +663,44 @@ var MainScreen = function (coords) {
 		}
 
 		document.getElementsByClassName('share-cancel-btn')[0].addEventListener('click', this.hideShareScreen.bind(this));
-	};
+	}
 
-	this.hideShareScreen = function () {
+	hideShareScreen() {
 
 		this.widget.removeChild(document.querySelector('.widget-wrapper-cover'));
 		this.widget.removeChild(document.querySelector('.share-block'));
-	};
+	}
 
-	this.setMainPageInnerHTML();
+}
 
-	document.querySelector('.top-dropdown').addEventListener('click', this.showDropdownList.bind(this));
-};
+class Map {
 
-var Map = function () {
+	constructor() {
 
-	this.cityName = '';
-	this.coordsToString = '';
-	this.mapScreen = document.createElement('div');
-	this.mapScreen.className = 'location-wrapper-cover';
-	this.mapScreen.innerHTML = '\
-	<div class="location-map-wrapper">\
-		<div class="location-map" id="YMapsID">\
-			<div class="location-search-wrapper">\
-				<input class="location-search" placeholder="Введите название города..." autofocus>\
-				<a class="location-search-btn"><i class="fa fa-search fa-lg"></i></a>\
-				<a href="#change-location" class="location-confirm-btn"><i class="fa fa-check fa-lg"></i></a>\
+		this.cityName = '';
+		this.coordsToString = '';
+		this.mapScreen = document.createElement('div');
+		this.mapScreen.className = 'location-wrapper-cover';
+		this.mapScreen.innerHTML = '\
+		<div class="location-map-wrapper">\
+			<div class="location-map" id="YMapsID">\
+				<div class="location-search-wrapper">\
+					<input class="location-search" placeholder="Введите название города..." autofocus>\
+					<a class="location-search-btn"><i class="fa fa-search fa-lg"></i></a>\
+					<a href="#change-location" class="location-confirm-btn"><i class="fa fa-check fa-lg"></i></a>\
+				</div>\
 			</div>\
-		</div>\
-	</div>';
+		</div>';
 
-	document.getElementsByClassName('widget')[0].appendChild(this.mapScreen);
-	document.getElementById('YMapsID').style.height = window.screen.height / 2 + 'px';
+		document.getElementsByClassName('widget')[0].appendChild(this.mapScreen);
+		document.getElementById('YMapsID').style.height = window.screen.height / 2 + 'px';
 
-	this.initMap = function () {
+		ymaps.ready(this.initMap.bind(this));
+		document.querySelector('.location-search-btn').addEventListener('click', this.searchCityByName.bind(this));
+		document.querySelector('.location-confirm-btn').addEventListener('click', this.addNewCityToList.bind(this));
+	}
+
+	initMap() {
 
 		var geolocation = ymaps.geolocation;
 		coords = [ymaps.geolocation.latitude, ymaps.geolocation.longitude];
@@ -691,9 +724,9 @@ var Map = function () {
 				this.getNewCityDetails();
 			}
 		}.bind(this));
-	};
+	}
 
-	this.stringCoordsToArray = function (string) {
+	stringCoordsToArray(string) {
 
 		var arr = string.split(' ');
 		var reverseArr = arr.reverse();
@@ -701,9 +734,9 @@ var Map = function () {
 			return Number(element);
 		});
 		return arrayFromString;
-	};
+	}
 
-	this.getNewCityDetails = function () {
+	getNewCityDetails() {
 
 		var center = myMap.getCenter();
 		var newCenter = [center[0].toFixed(6), center[1].toFixed(6)];
@@ -715,9 +748,10 @@ var Map = function () {
 			this.cityName = data.response.GeoObjectCollection.featureMember["0"].GeoObject.name;
 			document.getElementsByClassName('location-search')[0].placeholder = this.cityName;
 		}.bind(this));
-	};
+	}
 
-	this.searchCityByName = function () {
+	searchCityByName() {
+
 		var name = document.getElementsByClassName('location-search')[0].value;
 		if (name == '') {
 			return;
@@ -731,20 +765,18 @@ var Map = function () {
 			this.getNewCityDetails();
 			document.getElementsByClassName('location-search')[0].value = '';
 		}.bind(this));
-	};
+	}
 
-	this.addNewCityToList = function () {
+	addNewCityToList() {
+
 		if (document.getElementsByClassName('location-search')[0].placeholder != document.getElementsByClassName('current-city')[0].innerHTML) {
 			eventBus.trigger('add-city', { cityName: this.cityName, coordsToString: this.coordsToString });
 		} else {
 			document.getElementsByClassName('widget')[0].removeChild(document.getElementsByClassName('location-wrapper-cover')[0]);
 		}
-	};
+	}
 
-	ymaps.ready(this.initMap.bind(this));
-	document.querySelector('.location-search-btn').addEventListener('click', this.searchCityByName.bind(this));
-	document.querySelector('.location-confirm-btn').addEventListener('click', this.addNewCityToList.bind(this));
-};
+}
 
 var Router = function (options) {
 	this.routes = options.routes || [];
@@ -792,9 +824,9 @@ Router.prototype = {
 	}
 };
 
-window.onload = function () {
+/*window.onload = function() {
 	location.hash = '';
-};
+}*/
 
 screen.orientation.lock('portrait');
 
@@ -902,55 +934,63 @@ function windBearing(num) {
 	}
 }
 
-var Settings = function (backHash) {
+class Settings {
 
-	document.body.innerHTML = '';
-	this.widget = document.createElement('div');
-	this.widget.className = 'widget';
-	document.body.appendChild(this.widget);
+	constructor(backHash) {
 
-	this.settingsScreen = document.createElement('div');
-	this.settingsScreen.className = 'widget-settings-wrapper';
+		document.body.innerHTML = '';
+		this.widget = document.createElement('div');
+		this.widget.className = 'widget';
+		document.body.appendChild(this.widget);
 
-	this.settingsScreen.innerHTML = '\
-	<div class="settings-header">\
-		<a href="#" class="settings-title js-settings-title"><i class="fa fa-angle-left fa-lg my-settings-angle-left"></i></span>Настройки<span></a>\
-		<div class="settings-divider settings-header-divider"></div>\
-	</div>\
-	<div class="settings-block">\
-		<div class="settings-block-title">Оповещения погоды</div>\
-		<div class="settings-divider settings-block-divider"></div>\
-		<div class="settings-block-body">\
-			<div class="settings-block-body-text"></div>\
-			<div class="settings-block-body-icon"></div>\
+		this.settingsScreen = document.createElement('div');
+		this.settingsScreen.className = 'widget-settings-wrapper';
+
+		this.settingsScreen.innerHTML = '\
+		<div class="settings-header">\
+			<a href="#" class="settings-title js-settings-title"><i class="fa fa-angle-left fa-lg my-settings-angle-left"></i></span>Настройки<span></a>\
+			<div class="settings-divider settings-header-divider"></div>\
 		</div>\
-	</div>\
-	<div class="settings-block">\
-		<div class="settings-block-title">Единица измерения</div>\
-		<div class="settings-divider settings-block-divider"></div>\
-		<a class="settings-block-body js-temp">\
-			<div class="settings-block-body-text">Единицы температуры</div>\
-			<div class="settings-block-body-icon"><span class="js-temp-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
-		</a>\
-		<a class="settings-block-body js-wind">\
-			<div class="settings-block-body-text">Скорость ветра</div>\
-			<div class="settings-block-body-icon"><span class="js-wind-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
-		</a>\
-	</div>';
+		<div class="settings-block">\
+			<div class="settings-block-title">Оповещения погоды</div>\
+			<div class="settings-divider settings-block-divider"></div>\
+			<div class="settings-block-body">\
+				<div class="settings-block-body-text"></div>\
+				<div class="settings-block-body-icon"></div>\
+			</div>\
+		</div>\
+		<div class="settings-block">\
+			<div class="settings-block-title">Единица измерения</div>\
+			<div class="settings-divider settings-block-divider"></div>\
+			<a class="settings-block-body js-temp">\
+				<div class="settings-block-body-text">Единицы температуры</div>\
+				<div class="settings-block-body-icon"><span class="js-temp-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
+			</a>\
+			<a class="settings-block-body js-wind">\
+				<div class="settings-block-body-text">Скорость ветра</div>\
+				<div class="settings-block-body-icon"><span class="js-wind-unit"></span><i class="fa fa-angle-right fa-lg my-settings-angle-right"></i></div>\
+			</a>\
+		</div>';
 
-	this.widget.appendChild(this.settingsScreen);
+		this.widget.appendChild(this.settingsScreen);
 
-	this.settingsScreen.getElementsByClassName('js-temp-unit')[0].innerHTML = localStorage.getItem('temp-unit') || 'C°';
-	this.settingsScreen.getElementsByClassName('js-wind-unit')[0].innerHTML = localStorage.getItem('wind-unit') || 'км/ч';
+		this.settingsScreen.getElementsByClassName('js-temp-unit')[0].innerHTML = localStorage.getItem('temp-unit') || 'C°';
+		this.settingsScreen.getElementsByClassName('js-wind-unit')[0].innerHTML = localStorage.getItem('wind-unit') || 'км/ч';
 
-	var self = this;
+		var self = this;
 
-	ymaps.ready(function () {
-		self.settingsScreen.getElementsByClassName('settings-block-body-text')[0].innerHTML = ymaps.geolocation.city;
-		self.settingsScreen.getElementsByClassName('js-settings-title').href = '#' + ymaps.geolocation.latitude + ',' + ymaps.geolocation.longitude;
-	});
+		ymaps.ready(function () {
+			self.settingsScreen.getElementsByClassName('settings-block-body-text')[0].innerHTML = ymaps.geolocation.city;
+			self.settingsScreen.getElementsByClassName('js-settings-title').href = '#' + ymaps.geolocation.latitude + ',' + ymaps.geolocation.longitude;
+		});
 
-	this.showWindOptionsScreen = function () {
+		this.settingsScreen.getElementsByClassName('js-wind')[0].addEventListener('click', this.showWindOptionsScreen.bind(this));
+		this.settingsScreen.getElementsByClassName('js-temp')[0].addEventListener('click', this.showTempOptionsScreen.bind(this));
+		this.settingsScreen.getElementsByClassName('js-settings-title')[0].href = '#today=' + backHash;
+	}
+
+	showWindOptionsScreen() {
+
 		var wrapper = document.createElement('div');
 		wrapper.className = 'widget-wrapper-cover';
 		this.widget.appendChild(wrapper);
@@ -974,9 +1014,10 @@ var Settings = function (backHash) {
 		}
 
 		optionsBlock.addEventListener('click', this.selectWindOption.bind(this));
-	};
+	}
 
-	this.selectWindOption = function (event) {
+	selectWindOption(event) {
+
 		var target = event.target;
 
 		while (target !== document.getElementsByClassName('options-block')[0]) {
@@ -990,9 +1031,10 @@ var Settings = function (backHash) {
 			}
 			target = target.parentNode;
 		}
-	};
+	}
 
-	this.showTempOptionsScreen = function () {
+	showTempOptionsScreen() {
+
 		var wrapper = document.createElement('div');
 		wrapper.className = 'widget-wrapper-cover';
 		this.widget.appendChild(wrapper);
@@ -1016,9 +1058,10 @@ var Settings = function (backHash) {
 		}
 
 		optionsBlock.addEventListener('click', this.selectTempOption.bind(this));
-	};
+	}
 
-	this.selectTempOption = function (event) {
+	selectTempOption(event) {
+
 		var target = event.target;
 
 		while (target !== document.getElementsByClassName('options-block')[0]) {
@@ -1032,9 +1075,6 @@ var Settings = function (backHash) {
 			}
 			target = target.parentNode;
 		}
-	};
+	}
 
-	this.settingsScreen.getElementsByClassName('js-wind')[0].addEventListener('click', this.showWindOptionsScreen.bind(this));
-	this.settingsScreen.getElementsByClassName('js-temp')[0].addEventListener('click', this.showTempOptionsScreen.bind(this));
-	this.settingsScreen.getElementsByClassName('js-settings-title')[0].href = '#today=' + backHash;
-};
+}
